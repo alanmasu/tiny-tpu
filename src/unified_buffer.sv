@@ -1,7 +1,7 @@
 // TODO: get rid of the mixing of non blocking and blocking assignments
 
 `timescale 1ns/1ps
-`default_nettype none
+
 
 module unified_buffer #(
     parameter int UNIFIED_BUFFER_WIDTH = 128,

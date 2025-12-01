@@ -8,7 +8,17 @@ https://github.com/user-attachments/assets/b5d6aefe-4250-4c6d-866e-65d519e4de74
 
 
 ## Fork notes
-I've created a script to use `sv2v` to convert all sources into Verilog under `verilog/` folder. It crates also a log file in the root to keep track of possible porting errors. 
+- To verify the portability of the SystemVerilog sources is possible to use Verilator using this command:
+    ```bash
+    mkdir -p log
+    verilator --lint-only src/*.sv > log/verilatorSV.log 2>&1 
+    ```
+- I've created a script to use `sv2v` to convert all sources into Verilog under `verilog/` folder. It crates also a log file in the root to keep track of possible porting errors. 
+- After the porting I tested the code with:
+    ```bash
+    mkdir -p log
+    verilator --lint-only verilog/*.v > log/verilatorV.log 2>&1 
+    ```
 
 
 ## Table of Contents

@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-`default_nettype none
+
 
 module pe #(
     parameter int DATA_WIDTH = 16 //TODO: remove? we're not using this yet, lol)

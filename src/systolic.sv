@@ -1,5 +1,4 @@
 `timescale 1ns/1ps
-`default_nettype none
 
 // 2x2 systolic array
 module systolic #(
@@ -133,7 +132,7 @@ module systolic #(
         .pe_weight_out()
     );
 
-    always@(posedge clk or posedge rst) begin
+    always @ (posedge clk or posedge rst) begin
         if(rst) begin
             pe_enabled <= '0;
         end else begin

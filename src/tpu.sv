@@ -1,5 +1,4 @@
 `timescale 1ns/1ps
-`default_nettype none
 
 module tpu #(
     parameter int SYSTOLIC_ARRAY_WIDTH = 2
