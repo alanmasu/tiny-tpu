@@ -1,0 +1,117 @@
+`default_nettype none
+module systolic (
+	clk,
+	rst,
+	sys_data_in_11,
+	sys_data_in_21,
+	sys_start,
+	sys_data_out_21,
+	sys_data_out_22,
+	sys_valid_out_21,
+	sys_valid_out_22,
+	sys_weight_in_11,
+	sys_weight_in_12,
+	sys_accept_w_1,
+	sys_accept_w_2,
+	sys_switch_in,
+	ub_rd_col_size_in,
+	ub_rd_col_size_valid_in
+);
+	parameter signed [31:0] SYSTOLIC_ARRAY_WIDTH = 2;
+	input wire clk;
+	input wire rst;
+	input wire [15:0] sys_data_in_11;
+	input wire [15:0] sys_data_in_21;
+	input wire sys_start;
+	output wire [15:0] sys_data_out_21;
+	output wire [15:0] sys_data_out_22;
+	output wire sys_valid_out_21;
+	output wire sys_valid_out_22;
+	input wire [15:0] sys_weight_in_11;
+	input wire [15:0] sys_weight_in_12;
+	input wire sys_accept_w_1;
+	input wire sys_accept_w_2;
+	input wire sys_switch_in;
+	input wire [15:0] ub_rd_col_size_in;
+	input wire ub_rd_col_size_valid_in;
+	wire [15:0] pe_input_out_11;
+	wire [15:0] pe_input_out_21;
+	wire [15:0] pe_psum_out_11;
+	wire [15:0] pe_psum_out_12;
+	wire [15:0] pe_weight_out_11;
+	wire [15:0] pe_weight_out_12;
+	wire pe_switch_out_11;
+	wire pe_switch_out_12;
+	wire pe_valid_out_11;
+	wire pe_valid_out_12;
+	reg [1:0] pe_enabled;
+	pe pe11(
+		.clk(clk),
+		.rst(rst),
+		.pe_enabled(pe_enabled[0]),
+		.pe_valid_in(sys_start),
+		.pe_valid_out(pe_valid_out_11),
+		.pe_accept_w_in(sys_accept_w_1),
+		.pe_switch_in(sys_switch_in),
+		.pe_switch_out(pe_switch_out_11),
+		.pe_input_in(sys_data_in_11),
+		.pe_psum_in(16'b0000000000000000),
+		.pe_weight_in(sys_weight_in_11),
+		.pe_input_out(pe_input_out_11),
+		.pe_psum_out(pe_psum_out_11),
+		.pe_weight_out(pe_weight_out_11)
+	);
+	pe pe12(
+		.clk(clk),
+		.rst(rst),
+		.pe_enabled(pe_enabled[1]),
+		.pe_valid_in(pe_valid_out_11),
+		.pe_valid_out(pe_valid_out_12),
+		.pe_accept_w_in(sys_accept_w_2),
+		.pe_switch_in(pe_switch_out_11),
+		.pe_switch_out(pe_switch_out_12),
+		.pe_input_in(pe_input_out_11),
+		.pe_psum_in(16'b0000000000000000),
+		.pe_weight_in(sys_weight_in_12),
+		.pe_input_out(),
+		.pe_psum_out(pe_psum_out_12),
+		.pe_weight_out(pe_weight_out_12)
+	);
+	pe pe21(
+		.clk(clk),
+		.rst(rst),
+		.pe_enabled(pe_enabled[0]),
+		.pe_valid_in(pe_valid_out_11),
+		.pe_valid_out(sys_valid_out_21),
+		.pe_accept_w_in(sys_accept_w_1),
+		.pe_switch_in(pe_switch_out_11),
+		.pe_switch_out(),
+		.pe_input_in(sys_data_in_21),
+		.pe_psum_in(pe_psum_out_11),
+		.pe_weight_in(pe_weight_out_11),
+		.pe_input_out(pe_input_out_21),
+		.pe_psum_out(sys_data_out_21),
+		.pe_weight_out()
+	);
+	pe pe22(
+		.clk(clk),
+		.rst(rst),
+		.pe_enabled(pe_enabled[1]),
+		.pe_valid_in(pe_valid_out_12),
+		.pe_valid_out(sys_valid_out_22),
+		.pe_accept_w_in(sys_accept_w_2),
+		.pe_switch_in(pe_switch_out_12),
+		.pe_switch_out(),
+		.pe_input_in(pe_input_out_21),
+		.pe_psum_in(pe_psum_out_12),
+		.pe_weight_in(pe_weight_out_12),
+		.pe_input_out(),
+		.pe_psum_out(sys_data_out_22),
+		.pe_weight_out()
+	);
+	always @(posedge clk or posedge rst)
+		if (rst)
+			pe_enabled <= 1'sb0;
+		else if (ub_rd_col_size_valid_in)
+			pe_enabled <= (1 << ub_rd_col_size_in) - 1;
+endmodule

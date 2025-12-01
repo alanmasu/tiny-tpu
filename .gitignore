@@ -36,3 +36,6 @@ results.xml
 gtkwave
 
 archive
+
+# Logs
+*.log

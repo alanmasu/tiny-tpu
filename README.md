@@ -7,31 +7,48 @@ A minimal tensor processing unit (TPU), reinvented from Google's TPU V2 and V1.
 https://github.com/user-attachments/assets/b5d6aefe-4250-4c6d-866e-65d519e4de74
 
 
+## Fork notes
+I've created a script to use `sv2v` to convert all sources into Verilog under `verilog/` folder. It crates also a log file in the root to keep track of possible porting errors. 
+
 
 ## Table of Contents
 
-- [Motivation](#motivation)
-- [Architecture](#architecture)
-  - [Processing Element (PE)](#processing-element-pe)
-  - [Systolic Array](#systolic-array)
-  - [Vector Processing Unit (VPU)](#vector-processing-unit-vpu)
-  - [Unified Buffer (UB)](#unified-buffer-ub)
-  - [Control Unit](#control-unit)
-- [Instruction Set](#instruction-set)
-- [Example Instruction Sequence](#example-instruction-sequence)
-- [Future Steps](#future-steps)
-- [Setup](#setup)
-  - [MacOS specific](#macos-specific)
-  - [Ubuntu specific](#ubuntu-specific)
-- [Adding a new module to the tiny-tpu](#adding-a-new-module-to-the-tiny-tpu)
-  - [1. Create the module file](#1-create-the-module-file)
-  - [2. Create the dump file](#2-create-the-dump-file)
-  - [3. Create the test file](#3-create-the-test-file)
-  - [4. Update the Makefile](#4-update-the-makefile)
-  - [5. View waveforms](#5-view-waveforms)
-- [Running commands from Makefile](#running-commands-from-makefile)
-- [Fixed point viewing in gtkwave](#fixed-point-viewing-in-gtkwave)
-- [What is a gtkw file?](#what-is-a-gtkw-file)
+- [tiny-tpu](#tiny-tpu)
+  - [Fork notes](#fork-notes)
+  - [Table of Contents](#table-of-contents)
+  - [Architecture](#architecture)
+    - [Processing Element (PE)](#processing-element-pe)
+    - [Systolic Array](#systolic-array)
+    - [Vector Processing Unit (VPU)](#vector-processing-unit-vpu)
+    - [Unified Buffer (UB)](#unified-buffer-ub)
+    - [Control Unit](#control-unit)
+  - [Instruction Set](#instruction-set)
+    - [Bits \[0–4\]: 1-bit Control Signals](#bits-04-1-bit-control-signals)
+    - [Bits \[6:5\]: UB Read Column Size (2-bit)](#bits-65-ub-read-column-size-2-bit)
+    - [Bits \[14:7\]: UB Read Row Size (8-bit)](#bits-147-ub-read-row-size-8-bit)
+    - [Bits \[22:15\]: UB Read Address (8-bit)](#bits-2215-ub-read-address-8-bit)
+    - [Bits \[25:23\]: UB Pointer Select (3-bit)](#bits-2523-ub-pointer-select-3-bit)
+    - [Bits \[41:26\]: UB Write Host Data In 1 (16-bit, Fixed-Point)](#bits-4126-ub-write-host-data-in-1-16-bit-fixed-point)
+    - [Bits \[57:42\]: UB Write Host Data In 2 (16-bit, Fixed-Point)](#bits-5742-ub-write-host-data-in-2-16-bit-fixed-point)
+    - [Bits \[61:58\]: VPU Data Pathway (4-bit)](#bits-6158-vpu-data-pathway-4-bit)
+    - [Bits \[77:62\]: Inverse Batch Size × 2 (16-bit, Fixed-Point)](#bits-7762-inverse-batch-size--2-16-bit-fixed-point)
+    - [Bits \[93:78\]: VPU Leak Factor (16-bit, Fixed-Point)](#bits-9378-vpu-leak-factor-16-bit-fixed-point)
+  - [Example Instruction Sequence](#example-instruction-sequence)
+  - [Future Steps](#future-steps)
+  - [Setup](#setup)
+    - [MacOS Specific](#macos-specific)
+    - [Ubuntu/Linux Specific](#ubuntulinux-specific)
+  - [Adding Modules](#adding-modules)
+    - [1. Create the Module File](#1-create-the-module-file)
+    - [2. Create the Dump File](#2-create-the-dump-file)
+    - [3. Creating Tests](#3-creating-tests)
+    - [4. Makefile Updates](#4-makefile-updates)
+    - [5. View Waveforms](#5-view-waveforms)
+  - [Makefile Commands](#makefile-commands)
+  - [GTKWwave Setup](#gtkwwave-setup)
+  - [What is a .gtkw File?](#what-is-a-gtkw-file)
+  - [Motivation](#motivation)
+  - [Installing \`sb2v'](#installing-sb2v)
 
 ## Architecture
 
@@ -284,3 +301,23 @@ The details of TPU architecture are closed source, as is most of chip design. We
 Before this project, none of us had professional experience in hardware architecture/design. We started this ambitious project as a dedicated group wanting to break into hardware design. We've collectively gained significant design experience from this project.
 
 We hope that the inventive nature of the article at [tinytpu.com](https://tinytpu.com), this README, and the code in this repository will help you walk through our steps and learn how to approach problems with an inventive mindset.
+
+## Installing `sb2v' 
+1) Installing Stack;
+2) Go to `/opt`:
+    ```bash
+    cd /opt
+    ```
+3) Clone the repo:
+    ```bash
+    sudo git clone https://github.com/zachjs/sv2v.git
+   ```
+4) Open the new folder and compile it:
+    ```bash
+    cd sv2v
+    sudo make
+    ```
+1) Create symbolik link:
+    ```bash
+    sudo ln -s /opt/sv2v/bin/sv2v /usr/bin
+    ```
