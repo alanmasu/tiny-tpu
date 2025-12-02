@@ -1,4 +1,3 @@
-`default_nettype none
 module gradient_descent (
 	clk,
 	rst,

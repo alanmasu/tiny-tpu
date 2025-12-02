@@ -1,4 +1,3 @@
-`default_nettype none
 module leaky_relu_child (
 	clk,
 	rst,

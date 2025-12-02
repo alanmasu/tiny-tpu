@@ -7,10 +7,12 @@ SRC_DIR="src"
 DST_DIR="verilog"
 
 # File di log
-LOG_FILE="sv2v_conversion.log"
+LOG_DIR="log"
+LOG_FILE="${LOG_DIR}/sv2v_conversion.log"
 
 # Crea la directory destinazione se non esiste
 mkdir -p "$DST_DIR"
+mkdir -p "$LOG_DIR"
 
 # Pulisce il log precedente
 echo "Conversione iniziata il $(date)" > "$LOG_FILE"
