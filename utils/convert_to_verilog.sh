@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Directory sorgenti
-SRC_DIR="src"
+SRC_DIR="src/systemverilog"
 
 # Directory destinazione
-DST_DIR="verilog"
+DST_DIR="src/verilog"
 
 # File di log
 LOG_DIR="log"
