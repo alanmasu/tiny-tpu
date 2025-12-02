@@ -1,4 +1,3 @@
-`default_nettype none
 module control_unit (
 	instruction,
 	sys_switch_in,

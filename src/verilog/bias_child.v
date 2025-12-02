@@ -1,4 +1,3 @@
-`default_nettype none
 module bias_child (
 	clk,
 	rst,

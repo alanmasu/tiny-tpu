@@ -1,4 +1,3 @@
-`default_nettype none
 module unified_buffer (
 	clk,
 	rst,
