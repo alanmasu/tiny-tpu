@@ -16,22 +16,22 @@ export PYTHONPATH := test:$(PYTHONPATH)
 
 #=============== MODIFY BELOW ======================
 # ********** IF YOU HAVE A NEW VERILOG FILE, ADD IT TO THE SOURCES VARIABLE
-SOURCES = src/pe.sv \
-          src/leaky_relu_child.sv \
-          src/leaky_relu_parent.sv \
-          src/leaky_relu_derivative_child.sv \
-          src/leaky_relu_derivative_parent.sv \
-          src/systolic.sv \
-          src/bias_child.sv \
-          src/bias_parent.sv \
-          src/fixedpoint.sv \
-          src/control_unit.sv \
-          src/unified_buffer.sv \
-          src/vpu.sv \
-          src/loss_parent.sv \
-		  src/loss_child.sv \
-		  src/tpu.sv \
-		  src/gradient_descent.sv
+SOURCES = src/systemverilog/pe.sv \
+          src/systemverilog/leaky_relu_child.sv \
+          src/systemverilog/leaky_relu_parent.sv \
+          src/systemverilog/leaky_relu_derivative_child.sv \
+          src/systemverilog/leaky_relu_derivative_parent.sv \
+          src/systemverilog/systolic.sv \
+          src/systemverilog/bias_child.sv \
+          src/systemverilog/bias_parent.sv \
+          src/systemverilog/fixedpoint.sv \
+          src/systemverilog/control_unit.sv \
+          src/systemverilog/unified_buffer.sv \
+          src/systemverilog/vpu.sv \
+          src/systemverilog/loss_parent.sv \
+		  src/systemverilog/loss_child.sv \
+		  src/systemverilog/tpu.sv \
+		  src/systemverilog/gradient_descent.sv
 
 # MODIFY 1) variable next to -s 
 # MODIFY 2) variable next to $(SOURCES)
