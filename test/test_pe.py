@@ -16,6 +16,8 @@ async def test_pe(dut):
 
     clock = Clock(dut.clk, 10, units="ns")
     cocotb.start_soon(clock.start())
+    
+    await RisingEdge(dut.clk)
 
     # Reset
     dut.rst.value = 1
