@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.118 (w)1999-2023 BSI
-[*] Wed Dec  3 13:01:14 2025
+[*] Wed Dec  3 13:39:17 2025
 [*]
 [dumpfile] "/home/alan.masutti/ACA_project/tiny-tpu/waveforms/pe.vcd"
-[dumpfile_mtime] "Wed Dec  3 13:00:34 2025"
+[dumpfile_mtime] "Wed Dec  3 13:38:05 2025"
 [dumpfile_size] 5390
 [savefile] "/home/alan.masutti/ACA_project/tiny-tpu/waveforms/pe.gtkw"
 [timestart] 0
 [size] 1534 728
 [pos] -1 -1
-*-14.467835 44500 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+*-14.467835 6400 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 [markername] AA
 [markername] BB
 [markername] CC
