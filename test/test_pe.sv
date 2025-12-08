@@ -40,36 +40,16 @@ module test_pe_tb;
         end
     endfunction
 
-    function automatic real from_fixed(
-        input bit [15:0] val,          // Valore in punto fisso a 16 bit (non signed)
-        input int frac_bits = 8        // Numero di bit frazionari (default 8)
-    );
-        // Variabile intermedia per contenere il valore in complemento a due come intero con segno.
-        // Utilizziamo 'int signed' (32 bit) o 'longint signed' (64 bit) per evitare overflow
-        // durante il calcolo del complemento a due $val - 2^{16}$.
-        int signed signed_val;
+    function automatic real from_fixed(input bit [15:0] val);
         real result;
         
-        // --- Passaggio 1: Conversione da 16-bit non signed a Signed (Complemento a Due) ---
-        // Logica: Se il bit 15 è impostato, il valore è negativo (val - 2^16).
-
+        bit signed [15:0] signed_val;
         if (val[15] == 1) begin
-            // Il numero è negativo. Si applica la logica del complemento a due.
-            // Utilizziamo $signed(val) per trattare 'val' in un contesto con segno
-            // e lo sottraiamo per 2^16 (1 << 16).
             signed_val = $signed(val) - (1 << 16); 
         end else begin
-            // Il numero è positivo.
             signed_val = val;
         end
-        
-        // --- Passaggio 2: Calcolo finale in Virgola Mobile ---
-        // Formula: (Valore con segno) / (2^frac_bits)
-        
-        // Moltiplichiamo il numeratore 'signed_val' per 1.0 (un valore 'real')
-        // per forzare l'intero calcolo a eseguire la divisione in aritmetica 'real'.
-        result = (signed_val * 1.0) / (1 << frac_bits);
-
+        result = (signed_val * 1.0) / (1 << 8);
         return result;
     endfunction
     
@@ -82,6 +62,9 @@ module test_pe_tb;
     logic valitading = 0;
     int testN = 0;
     initial begin
+        $display("Testing converion functions: from_fixed(to_fixed(-3.3984375) = %.8f", from_fixed(to_fixed(-3.3984375)));
+        $display("Testing converion functions: from_fixed(to_fixed(4.34765625) = %.8f", from_fixed(to_fixed(4.34765625)));
+
         rst = 1;
         pe_psum_in = to_fixed(0.0);
         pe_weight_in = to_fixed(0.0);
@@ -95,7 +78,7 @@ module test_pe_tb;
         rst = 0;
         pe_enabled_in = 1;    
         pe_accept_w_in = 1;
-        pe_weight_in = to_fixed(69.0);
+        pe_weight_in = to_fixed(4.34765625);
         #1;
         valitading = 1'b1;
         if (dut.weight_reg_inactive == to_fixed(0.0)) begin
@@ -114,27 +97,28 @@ module test_pe_tb;
         testN = 1;
         @(posedge clk);
         #1;
+        pe_enabled_in = 1;    
         pe_accept_w_in = 1;
-        pe_weight_in = to_fixed(10.0);
+        pe_weight_in = to_fixed(10.6015625);
         pe_valid_in = 1;
         pe_input_in = to_fixed(2.0);
         pe_switch_in = 1;
         #1;
         valitading = 1'b1;
-        if (dut.weight_reg_inactive == to_fixed(69.0)) begin
+        if (dut.weight_reg_inactive == to_fixed(4.34765625)) begin
             $display("Test #%0da OK", testN);
         end else begin
-            $display("Test #%0da FAIL => weight_reg_inactive was %f, expected %f", testN, from_fixed(dut.weight_reg_inactive), 69.0);
+            $display("Test #%0da FAIL => weight_reg_inactive was %f, expected %f", testN, from_fixed(dut.weight_reg_inactive), 4.34765625);
         end
         if(dut.weight_reg_active == to_fixed(0.0)) begin
             $display("Test #%0db OK", testN);
         end else begin
             $display("Test #%0db FAIL => weight_reg_active was %f, expected %f", testN, from_fixed(dut.weight_reg_active), 0.0);
         end
-        if(pe_weight_out == to_fixed(69.0)) begin
+        if(pe_weight_out == to_fixed(4.34765625)) begin
             $display("Test #%0dc OK", testN);
         end else begin
-            $display("Test #%0dc FAIL => pe_weight_out was %f, expected %f", testN, from_fixed(pe_weight_out), 69.0);
+            $display("Test #%0dc FAIL => pe_weight_out was %f, expected %f", testN, from_fixed(pe_weight_out), 4.34765625);
         end
         #1;
         valitading = 1'b0;
@@ -142,26 +126,131 @@ module test_pe_tb;
         testN = 2;
         @(posedge clk);
         #1;
-        pe_accept_w_in = 0;
-        
+        pe_enabled_in = 1;    
+        pe_accept_w_in = 1;
+        pe_weight_in = to_fixed(5.75);
+        pe_valid_in = 1;
+        pe_input_in = to_fixed(-3.3984375);        
+        pe_switch_in = 1;
+        #1;
         valitading = 1'b1;
-        //if
+        //Cheking inteternal registers 
+        if (dut.weight_reg_inactive == to_fixed(10.6015625)) begin
+            $display("Test #%0da OK", testN);
+        end else begin
+            $display("Test #%0da FAIL => weight_reg_inactive was %f, expected %f", testN, from_fixed(dut.weight_reg_inactive), 10.6015625);
+        end
+        if(dut.weight_reg_active == to_fixed(4.34765625)) begin
+            $display("Test #%0db OK", testN);
+        end else begin
+            $display("Test #%0db FAIL => weight_reg_active was %f, expected %f", testN, from_fixed(dut.weight_reg_active), 4.34765625);
+        end
+        //Checking south ouptut
+        if(pe_weight_out == to_fixed(10.6015625)) begin
+            $display("Test #%0dc OK", testN);
+        end else begin
+            $display("Test #%0dc FAIL => pe_weight_out was %f, expected %f", testN, from_fixed(pe_weight_out), 10.6015625);
+        end
+        if(pe_psum_out == to_fixed(0.0)) begin 
+            $display("Test #%0dd OK", testN);
+        end else begin
+            $display("Test #%0dd FAIL => pe_psum_out was %f, expected %f", testN, from_fixed(pe_psum_out), 0.0);
+        end
+        //Cheching east ouptut
+        if(pe_input_out == to_fixed(2.0)) begin
+            $display("Test #%0de OK", testN);
+        end else begin
+            $display("Test #%0de FAIL => pe_input_out was %f, expected %f", testN, from_fixed(pe_input_out), 2.0);
+        end
         #1;
         valitading = 1'b0;
 
+        testN = 3;
         @(posedge clk);
         #1;
-    
+        pe_enabled_in = 1;    
+        pe_accept_w_in = 0;
+        pe_weight_in = to_fixed(0.0);
         pe_valid_in = 1;
+        pe_input_in = to_fixed(19.359375);        
+        pe_switch_in = 1;
+        #1;
+        valitading = 1'b1;
+        //Cheking inteternal registers
+        if(dut.weight_reg_inactive == to_fixed(5.75)) begin
+            $display("Test #%0da OK", testN);
+        end else begin
+            $display("Test #%0da FAIL => weight_reg_inactive was %f, expected %f", testN, from_fixed(dut.weight_reg_inactive), 5.75);
+        end 
+        if(dut.weight_reg_active == to_fixed(10.6015625)) begin
+            $display("Test #%0db OK", testN);
+        end else begin
+            $display("Test #%0db FAIL => weight_reg_inactive was %f, expected %f", testN, from_fixed(dut.weight_reg_active), 10.6015625);
+        end 
+        //Checking south ouptut
+        if(pe_weight_out == to_fixed(5.75)) begin
+            $display("Test #%0dc OK", testN);
+        end else begin
+            $display("Test #%0dc FAIL => pe_weight_out was %f, expected %f", testN, from_fixed(pe_weight_out), 5.75);
+        end
+        if(pe_psum_out == to_fixed(8.6953125)) begin 
+            $display("Test #%0dd OK", testN);
+        end else begin
+            $display("Test #%0dd FAIL => pe_psum_out was %f, expected %f", testN, from_fixed(pe_psum_out), 8.6953125);
+        end
+        //Cheching east ouptut
+        if(pe_input_out == to_fixed(-3.3984375)) begin
+            $display("Test #%0de OK", testN);
+        end else begin
+            $display("Test #%0de FAIL => pe_input_out was %f, expected %f", testN, from_fixed(pe_input_out), -3.3984375);
+        end
+        #1;
+        valitading = 1'b0;
+        
+        testN = 4;
         @(posedge clk);
-    
+        #1;                 
+        pe_enabled_in = 0;    
+        pe_accept_w_in = 0;
+        pe_weight_in = to_fixed(0.0);
         pe_valid_in = 0;
-        @(posedge clk);
+        pe_input_in = to_fixed(0);        
+        pe_switch_in = 1;
+        #1;
+        valitading = 1'b1;
+        // //Cheking inteternal registers
+        // if(dut.weight_reg_inactive == to_fixed(5.75)) begin
+        //     $display("Test #%0da OK", testN);
+        // end else begin
+        //     $display("Test #%0da FAIL => weight_reg_inactive was %f, expected %f", testN, from_fixed(dut.weight_reg_inactive), 5.75);
+        // end 
+        // if(dut.weight_reg_active == to_fixed(5.75)) begin
+        //     $display("Test #%0db OK", testN);
+        // end else begin
+        //     $display("Test #%0db FAIL => weight_reg_inactive was %f, expected %f", testN, from_fixed(dut.weight_reg_inactive), 5.75);
+        // end 
+        // //Checking south ouptut
+        // if(pe_weight_out == to_fixed(5.75)) begin
+        //     $display("Test #%0dc OK", testN);
+        // end else begin
+        //     $display("Test #%0dc FAIL => pe_weight_out was %f, expected %f", testN, from_fixed(pe_weight_out), 5.75);
+        // end
+        // if(pe_psum_out == to_fixed(8.6953125)) begin 
+        //     $display("Test #%0dd OK", testN);
+        // end else begin
+        //     $display("Test #%0dd FAIL => pe_psum_out was %f, expected %f", testN, from_fixed(pe_psum_out), 0.0);
+        // end
+        // //Cheching east ouptut
+        // if(pe_input_out == to_fixed(8.83984375)) begin
+        //     $display("Test #%0de OK", testN);
+        // end else begin
+        //     $display("Test #%0de FAIL => pe_input_out was %f, expected %f", testN, from_fixed(pe_input_out), 2.0);
+        // end
+        #1;
+        valitading = 1'b0;
+       
     
-        pe_switch_in = 0;
-        pe_valid_in = 0;
-    
-        repeat(3) @(posedge clk);
+        repeat(5) @(posedge clk);
     
         $finish;
     end
