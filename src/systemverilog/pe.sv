@@ -57,7 +57,7 @@ module pe #(
     //     end
     // end
 
-    always @(posedge clk, rst) begin
+    always @(posedge clk or posedge rst) begin
         if (rst || !pe_enabled) begin
             pe_input_out <= 16'b0;
             weight_reg_inactive <= 16'b0;

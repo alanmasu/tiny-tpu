@@ -92,13 +92,26 @@ module test_pe_tb;
         pe_enabled_in = 0;
         @(posedge clk);
         #1;
-
-        testN = 1;
-        if(testN == 1) $display("Starting Test #%0d", testN);
         rst = 0;
         pe_enabled_in = 1;    
         pe_accept_w_in = 1;
         pe_weight_in = to_fixed(69.0);
+        #1;
+        valitading = 1'b1;
+        if (dut.weight_reg_inactive == to_fixed(0.0)) begin
+            $display("Test #%0da OK", testN);
+        end else begin
+            $display("Test #%0da FAIL => weight_reg_inactive was %f, expected %f", testN, from_fixed(dut.weight_reg_inactive), 0.0);
+        end
+        if(pe_weight_out == to_fixed(0.0)) begin
+            $display("Test #%0db OK", testN);
+        end else begin
+            $display("Test #%0db FAIL => pe_weight_out was %f, expected %f", testN, from_fixed(pe_weight_out), 0.0);
+        end
+        #1;
+        valitading = 1'b0;
+
+        testN = 1;
         @(posedge clk);
         #1;
         pe_accept_w_in = 1;
