@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="test_pe_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="test_pe_tb" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="94,988 ps"></ZoomStartTime>
+      <ZoomEndTime time="95,006 ps"></ZoomEndTime>
+      <Cursor1Time time="95,000 ps"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="276"></NameColumnWidth>
+      <ValueColumnWidth column_width="120"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="12" />
+   <wvobject type="logic" fp_name="/test_pe_tb/clk">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/test_pe_tb/rst">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/test_pe_tb/pe_valid_in">
+      <obj_property name="ElementShortName">pe_valid_in</obj_property>
+      <obj_property name="ObjectShortName">pe_valid_in</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/test_pe_tb/pe_accept_w_in">
+      <obj_property name="ElementShortName">pe_accept_w_in</obj_property>
+      <obj_property name="ObjectShortName">pe_accept_w_in</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/test_pe_tb/pe_input_in">
+      <obj_property name="ElementShortName">pe_input_in[15:0]</obj_property>
+      <obj_property name="ObjectShortName">pe_input_in[15:0]</obj_property>
+      <obj_property name="Radix">REALRADIX</obj_property>
+      <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+      <obj_property name="radix_fractionWidth">8</obj_property>
+      <obj_property name="radix_otherWidth">0</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/test_pe_tb/pe_weight_in">
+      <obj_property name="ElementShortName">pe_weight_in[15:0]</obj_property>
+      <obj_property name="ObjectShortName">pe_weight_in[15:0]</obj_property>
+      <obj_property name="Radix">REALRADIX</obj_property>
+      <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+      <obj_property name="radix_fractionWidth">8</obj_property>
+      <obj_property name="radix_otherWidth">0</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/test_pe_tb/pe_psum_in">
+      <obj_property name="ElementShortName">pe_psum_in[15:0]</obj_property>
+      <obj_property name="ObjectShortName">pe_psum_in[15:0]</obj_property>
+      <obj_property name="Radix">REALRADIX</obj_property>
+      <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+      <obj_property name="radix_fractionWidth">8</obj_property>
+      <obj_property name="radix_otherWidth">0</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/test_pe_tb/pe_switch_in">
+      <obj_property name="ElementShortName">pe_switch_in</obj_property>
+      <obj_property name="ObjectShortName">pe_switch_in</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/test_pe_tb/pe_valid_out">
+      <obj_property name="ElementShortName">pe_valid_out</obj_property>
+      <obj_property name="ObjectShortName">pe_valid_out</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/test_pe_tb/pe_input_out">
+      <obj_property name="ElementShortName">pe_input_out[15:0]</obj_property>
+      <obj_property name="ObjectShortName">pe_input_out[15:0]</obj_property>
+      <obj_property name="Radix">REALRADIX</obj_property>
+      <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+      <obj_property name="radix_fractionWidth">8</obj_property>
+      <obj_property name="radix_otherWidth">0</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/test_pe_tb/pe_weight_out">
+      <obj_property name="ElementShortName">pe_weight_out[15:0]</obj_property>
+      <obj_property name="ObjectShortName">pe_weight_out[15:0]</obj_property>
+      <obj_property name="Radix">REALRADIX</obj_property>
+      <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+      <obj_property name="radix_fractionWidth">8</obj_property>
+      <obj_property name="radix_otherWidth">0</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/test_pe_tb/pe_psum_out">
+      <obj_property name="ElementShortName">pe_psum_out[15:0]</obj_property>
+      <obj_property name="ObjectShortName">pe_psum_out[15:0]</obj_property>
+      <obj_property name="Radix">REALRADIX</obj_property>
+      <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+      <obj_property name="radix_fractionWidth">8</obj_property>
+      <obj_property name="radix_otherWidth">0</obj_property>
+   </wvobject>
+</wave_config>
