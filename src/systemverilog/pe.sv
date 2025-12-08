@@ -69,6 +69,7 @@ module pe #(
         end else begin
             pe_valid_out <= pe_valid_in;
             pe_switch_out <= pe_switch_in;
+            pe_psum_out <= mac_out;
 
             if (pe_switch_in) begin
                 weight_reg_active <= weight_reg_inactive;
@@ -84,11 +85,10 @@ module pe #(
 
             if (pe_valid_in) begin
                 pe_input_out <= pe_input_in;
-                pe_psum_out <= mac_out;
             end else begin
                 pe_valid_out <= 0;
-                pe_psum_out <= 16'b0;
             end
+
 
         end
     end
