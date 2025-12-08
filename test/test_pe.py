@@ -1,6 +1,6 @@
 import cocotb
 from cocotb.clock import Clock
-from cocotb.triggers import RisingEdge, ClockCycles
+from cocotb.triggers import RisingEdge, ClockCycles, Timer
 
 def to_fixed(val, frac_bits=8):
     return int(round(val * (1 << frac_bits))) & 0xFFFF
@@ -21,19 +21,22 @@ async def test_pe(dut):
 
     # Reset
     dut.rst.value = 1
-    dut.pe_valid_in.value = 0 # this would enable the PE to start processing the inputs. but it doesnt here
-
-    dut.pe_accept_w_in.value = 0
-    dut.pe_input_in.value = to_fixed(0.0)
-    dut.pe_weight_in.value = to_fixed(0.0)
+    
     dut.pe_psum_in.value = to_fixed(0.0)
+    dut.pe_weight_in.value = to_fixed(0.0)
+    dut.pe_accept_w_in.value = 0
+    
+    dut.pe_input_in.value = to_fixed(0.0)
+    dut.pe_valid_in.value = 0
+    dut.pe_switch_in.value = 0
+    dut.pe_enabled.value = 0    
+
     await RisingEdge(dut.clk)
+    await Timer(1, "ns")
 
     # Release reset
     dut.rst.value = 0
-    await RisingEdge(dut.clk)
-
-    # t = 0: Stage the weights
+    # t = 11: Stage the weights
     dut.pe_accept_w_in.value = 1; # THIS IS THE "A" in xander's drawing!
     dut.pe_weight_in.value = to_fixed(69.0) # in next cycle, gets latched in background buffer of pe11!
     await RisingEdge(dut.clk)
