@@ -94,6 +94,7 @@ module test_pe_tb;
         #1;
 
         testN = 1;
+        if(testN == 1) $display("Starting Test #%0d", testN);
         rst = 0;
         pe_enabled_in = 1;    
         pe_accept_w_in = 1;
@@ -102,6 +103,10 @@ module test_pe_tb;
         #1;
         pe_accept_w_in = 1;
         pe_weight_in = to_fixed(10.0);
+        pe_valid_in = 1;
+        pe_input_in = to_fixed(2.0);
+        pe_switch_in = 1;
+        #1;
         valitading = 1'b1;
         if (dut.weight_reg_inactive == to_fixed(69.0)) begin
             $display("Test #%0da OK", testN);
@@ -116,14 +121,18 @@ module test_pe_tb;
         #1;
         valitading = 1'b0;
 
+        testN = 2;
         @(posedge clk);
         #1;
         pe_accept_w_in = 0;
-        pe_switch_in = 1;
-        pe_valid_in = 1;
-        pe_input_in = to_fixed(2.0);
-        pe_psum_in = to_fixed(50.0);
+        
+        valitading = 1'b1;
+        //if
+        #1;
+        valitading = 1'b0;
+
         @(posedge clk);
+        #1;
     
         pe_valid_in = 1;
         @(posedge clk);
