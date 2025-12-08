@@ -118,6 +118,11 @@ module test_pe_tb;
         end else begin
             $display("Test #%0db FAIL => weight_reg_active was %f, expected %f", testN, from_fixed(dut.weight_reg_active), 0.0);
         end
+        if(pe_weight_out == to_fixed(69.0)) begin
+            $display("Test #%0dc OK", testN);
+        end else begin
+            $display("Test #%0dc FAIL => pe_weight_out was %f, expected %f", testN, from_fixed(pe_weight_out), 69.0);
+        end
         #1;
         valitading = 1'b0;
 

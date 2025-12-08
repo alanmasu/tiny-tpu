@@ -49,13 +49,13 @@ module pe #(
 
     // Only the switch flag is combinational (active register copies inactive register on the same clock cycle that switch flag is set)
     // That means inputs from the left side of the PE can load in on the same clock cycle that the switch flag is set
-    always_comb begin
-        if (rst || !pe_enabled) begin
-            weight_reg_active = 16'b0;
-        end else if (pe_switch_in) begin
-            weight_reg_active = weight_reg_inactive;
-        end
-    end
+    // always_comb begin
+    //     if (rst || !pe_enabled) begin
+    //         weight_reg_active = 16'b0;
+    //     end else if (pe_switch_in) begin
+    //         weight_reg_active = weight_reg_inactive;
+    //     end
+    // end
 
     always @(posedge clk, rst) begin
         if (rst || !pe_enabled) begin
@@ -65,9 +65,14 @@ module pe #(
             pe_weight_out <= 16'b0;
             pe_switch_out <= 0;
             pe_psum_out <= 16'b0;
+             weight_reg_active = 16'b0;
         end else begin
             pe_valid_out <= pe_valid_in;
             pe_switch_out <= pe_switch_in;
+
+            if (pe_switch_in) begin
+                weight_reg_active <= weight_reg_inactive;
+            end
             
             // Weight register updates - only on clock edges
             if (pe_accept_w_in) begin
