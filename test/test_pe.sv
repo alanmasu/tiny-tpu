@@ -4,7 +4,7 @@
 module test_pe_tb;
     reg clk;
     reg rst;
-    
+
     reg pe_valid_in;
     reg pe_accept_w_in;
     reg [15:0] pe_input_in;
@@ -12,10 +12,10 @@ module test_pe_tb;
     reg [15:0] pe_psum_in;
     reg pe_switch_in = 0;
     reg pe_enabled_in = 0;
-    
+
     wire pe_valid_out;  // assuming
     wire [15:0] pe_input_out, pe_weight_out, pe_psum_out; // adjust as needed
-    
+
     pe dut (
         .clk(clk),
         .rst(rst),
@@ -31,7 +31,7 @@ module test_pe_tb;
         .pe_weight_out(pe_weight_out),
         .pe_psum_out(pe_psum_out)
     );
-    
+
     function [15:0] to_fixed(input real val);
         real scaled;
         begin
@@ -42,7 +42,7 @@ module test_pe_tb;
 
     function automatic real from_fixed(input bit [15:0] val);
         real result;
-        
+
         bit signed [15:0] signed_val;
         if (val[15] == 1) begin
             signed_val = $signed(val) - (1 << 16); 
@@ -52,12 +52,12 @@ module test_pe_tb;
         result = (signed_val * 1.0) / (1 << 8);
         return result;
     endfunction
-    
+
     initial begin
         clk = 1;
         forever #5 clk = ~clk;
     end
-    
+
 
     logic valitading = 0;
     int testN = 0;
@@ -76,7 +76,7 @@ module test_pe_tb;
         @(posedge clk);
         #1;
         rst = 0;
-        pe_enabled_in = 1;    
+        pe_enabled_in = 1;
         pe_accept_w_in = 1;
         pe_weight_in = to_fixed(4.34765625);
         #1;
@@ -97,7 +97,7 @@ module test_pe_tb;
         testN = 1;
         @(posedge clk);
         #1;
-        pe_enabled_in = 1;    
+        pe_enabled_in = 1;
         pe_accept_w_in = 1;
         pe_weight_in = to_fixed(10.6015625);
         pe_valid_in = 1;
@@ -126,11 +126,11 @@ module test_pe_tb;
         testN = 2;
         @(posedge clk);
         #1;
-        pe_enabled_in = 1;    
+        pe_enabled_in = 1;
         pe_accept_w_in = 1;
         pe_weight_in = to_fixed(5.75);
         pe_valid_in = 1;
-        pe_input_in = to_fixed(-3.3984375);        
+        pe_input_in = to_fixed(-3.3984375);
         pe_switch_in = 1;
         #1;
         valitading = 1'b1;
@@ -168,11 +168,11 @@ module test_pe_tb;
         testN = 3;
         @(posedge clk);
         #1;
-        pe_enabled_in = 1;    
+        pe_enabled_in = 1;
         pe_accept_w_in = 0;
         pe_weight_in = to_fixed(0.0);
         pe_valid_in = 1;
-        pe_input_in = to_fixed(19.359375);        
+        pe_input_in = to_fixed(19.359375);
         pe_switch_in = 1;
         #1;
         valitading = 1'b1;
@@ -206,15 +206,15 @@ module test_pe_tb;
         end
         #1;
         valitading = 1'b0;
-        
+
         testN = 4;
         @(posedge clk);
-        #1;                 
-        pe_enabled_in = 1;    
+        #1; 
+        pe_enabled_in = 1;
         pe_accept_w_in = 0;
         pe_weight_in = to_fixed(0.0);
         pe_valid_in = 0;
-        pe_input_in = to_fixed(0);        
+        pe_input_in = to_fixed(0);
         pe_switch_in = 0;
         #1;
         valitading = 1'b1;
@@ -248,15 +248,15 @@ module test_pe_tb;
         end
         #1;
         valitading = 1'b0;
-       
+   
         testN = 5;
         @(posedge clk);
-        #1;                 
-        pe_enabled_in = 1;    
+        #1; 
+        pe_enabled_in = 1;
         pe_accept_w_in = 0;
         pe_weight_in = to_fixed(0.0);
         pe_valid_in = 0;
-        pe_input_in = to_fixed(0);        
+        pe_input_in = to_fixed(0);
         pe_switch_in = 0;
         #1;
         valitading = 1'b1;
@@ -292,7 +292,7 @@ module test_pe_tb;
         valitading = 1'b0;
 
         repeat(5) @(posedge clk);
-    
+
         $finish;
     end
 

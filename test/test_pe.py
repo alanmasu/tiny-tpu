@@ -36,42 +36,89 @@ async def test_pe(dut):
 
     # Release reset
     dut.rst.value = 0
-    # t = 11: Stage the weights
-    dut.pe_accept_w_in.value = 1; # THIS IS THE "A" in xander's drawing!
-    dut.pe_weight_in.value = to_fixed(69.0) # in next cycle, gets latched in background buffer of pe11!
+    dut.pe_enabled.value = 1
+    dut.pe_accept_w_in.value = 1
+    dut.pe_weight_in.value = to_fixed(4.34765625)
+    await Timer(1, "ns")
+    #Test #0
+    assert dut.weight_reg_inactive.value == to_fixed(0.0), f"dut.weight_reg_inactive was {from_fixed(dut.weight_reg_inactive.value)}, expected 0.0"
+    assert dut.pe_weight_out.value == to_fixed(0.0), f"dut.pe_weight_out was {from_fixed(dut.pe_weight_out.value)}, expected 0.0"
+    
     await RisingEdge(dut.clk)
-
-
-    # t = 1: Weight should now be loaded in background buffer
-    dut.pe_accept_w_in.value = 1 # on next clock cycle 10 should be latched in background buffer of pe21, 20 should be latched in background buffer of pe 11!
-    dut.pe_weight_in.value = to_fixed(10.0)
-    await RisingEdge(dut.clk)
-
-    # t = 2: Assert the pe_switch_out signal to bring weight from bb to fb (foreground buffer) in next cycle
-    dut.pe_accept_w_in.value = 0 # stop loading weights into background buffer. 
-    dut.pe_switch_in.value = 1 # bring weight from bb to fb in next cc
-    dut.pe_valid_in.value = 1 # we want inputs to start moving in next cc, so we assert this flag here. 
-    dut.pe_input_in.value = to_fixed(2.0)
-    dut.pe_psum_in.value = to_fixed(50.0) 
-    await RisingEdge(dut.clk)
-
+    await Timer(1, "ns")
+    dut.pe_enabled.value = 1
+    dut.pe_accept_w_in.value = 1
+    dut.pe_weight_in.value = to_fixed(10.6015625)
     dut.pe_valid_in.value = 1
+    dut.pe_input_in.value = to_fixed(2.0)
+    dut.pe_switch_in.value = 1
+    await Timer(1, "ns")
+    #Test #1
+    assert dut.weight_reg_inactive.value == to_fixed(4.34765625), f"dut.weight_reg_inactive was {from_fixed(dut.weight_reg_inactive.value)}, expected 4.34765625"
+    assert dut.weight_reg_active.value == to_fixed(0.0), f"dut.weight_reg_active was {from_fixed(dut.weight_reg_active.value)}, expected 0.0"
+    assert dut.pe_weight_out.value == to_fixed(4.34765625), f"dut.pe_weight_out was {from_fixed(dut.pe_weight_out.value)}, expected 4.34765625"
+    
     await RisingEdge(dut.clk)
-
+    await Timer(1, "ns")
+    dut.pe_enabled.value = 1
+    dut.pe_accept_w_in.value = 1
+    dut.pe_weight_in.value = to_fixed(5.75)
+    dut.pe_valid_in.value = 1
+    dut.pe_input_in.value = to_fixed(-3.3984375)
+    dut.pe_switch_in.value = 1
+    await Timer(1, "ns")
+    #Test #2
+    assert dut.weight_reg_inactive.value == to_fixed(10.6015625), f"dut.weight_reg_inactive was {from_fixed(dut.weight_reg_inactive.value)}, expected 10.6015625"
+    assert dut.weight_reg_active.value == to_fixed(4.34765625), f"dut.weight_reg_active was {from_fixed(dut.weight_reg_active.value)}, expected 4.34765625"
+    assert dut.pe_weight_out.value == to_fixed(10.6015625), f"dut.pe_weight_out was {from_fixed(dut.pe_weight_out.value)}, expected 10.6015625"
+    assert dut.pe_psum_out.value == to_fixed(0.0), f"dut.pe_psum_out was {from_fixed(dut.pe_psum_out.value)}, expected 0.0"
+    assert dut.pe_input_out.value == to_fixed(2.0), f"dut.pe_input_out was {from_fixed(dut.pe_input_out.value)}, expected 2.0"
+    
+    await RisingEdge(dut.clk)
+    await Timer(1, "ns")
+    dut.pe_enabled.value = 1
+    dut.pe_accept_w_in.value = 0
+    dut.pe_weight_in.value = to_fixed(0.0)
+    dut.pe_valid_in.value = 1
+    dut.pe_input_in.value = to_fixed(19.359375)
+    dut.pe_switch_in.value = 1
+    await Timer(1, "ns")
+    #Test #3
+    assert dut.weight_reg_inactive.value == to_fixed(5.75), f"dut.weight_reg_inactive was {from_fixed(dut.weight_reg_inactive.value)}, expected 5.75"
+    assert dut.weight_reg_active.value == to_fixed(10.6015625), f"dut.weight_reg_active was {from_fixed(dut.weight_reg_active.value)}, expected 10.6015625"
+    assert dut.pe_weight_out.value == to_fixed(5.75), f"dut.pe_weight_out was {from_fixed(dut.pe_weight_out.value)}, expected 5.75"
+    assert dut.pe_psum_out.value == to_fixed(8.6953125), f"dut.pe_psum_out was {from_fixed(dut.pe_psum_out.value)}, expected 8.6953125"
+    assert dut.pe_input_out.value == to_fixed(-3.3984375), f"dut.pe_input_out was {from_fixed(dut.pe_input_out.value)}, expected -3.3984375"
+    
+    await RisingEdge(dut.clk)
+    await Timer(1, "ns")
+    dut.pe_enabled.value = 1
+    dut.pe_accept_w_in.value = 0
+    dut.pe_weight_in.value = to_fixed(0.0)
     dut.pe_valid_in.value = 0
+    dut.pe_input_in.value = to_fixed(0)
+    dut.pe_switch_in.value = 0
+    await Timer(1, "ns")
+    #Test #4
+    assert dut.weight_reg_inactive.value == to_fixed(5.75), f"dut.weight_reg_inactive was {from_fixed(dut.weight_reg_inactive.value)}, expected 5.75"
+    assert dut.weight_reg_active.value == to_fixed(5.75), f"dut.weight_reg_active was {from_fixed(dut.weight_reg_active.value)}, expected 5.75"
+    assert dut.pe_weight_out.value == to_fixed(0.0), f"dut.pe_weight_out was {from_fixed(dut.pe_weight_out.value)}, expected 0.0"
+    assert dut.pe_psum_out.value == to_fixed(-36.027344), f"dut.pe_psum_out was {from_fixed(dut.pe_psum_out.value)}, expected -36.027344"
+    assert dut.pe_input_out.value == to_fixed(19.359375), f"dut.pe_input_out was {from_fixed(dut.pe_input_out.value)}, expected 19.359375"
+        
     await RisingEdge(dut.clk)
-
-    # t = 3: 
-    # in this clock cycle, pe_valid_in and pe_switch_in are latched into pe11, now they are asserted to the outside of pe12 and pe21
-    # pe11 should also output a psum here, and pass its input to pe12
-    
-    # pe_switch_in and pe_valid_in should also be zero here 
-    # I HAVE MANUALLY DEFINED pe_switch_in AND pe_valid_in ZERO here. This is decided by the compiler.
-
-    dut.pe_switch_in.value = 0 # bring weight from bb to fb in next cc
-    dut.pe_valid_in.value = 0 # we want inputs to start moving in next cc, so we assert this flag here. 
-
-
-    await ClockCycles(dut.clk, 3)
-
-    
+    await Timer(1, "ns")
+    dut.pe_enabled.value = 1
+    dut.pe_accept_w_in.value = 0
+    dut.pe_weight_in.value = to_fixed(0.0)
+    dut.pe_valid_in.value = 0
+    dut.pe_input_in.value = to_fixed(0)
+    dut.pe_switch_in.value = 0
+    await Timer(1, "ns")
+    #Test #5
+    assert dut.weight_reg_inactive.value == to_fixed(5.75), f"dut.weight_reg_inactive was {from_fixed(dut.weight_reg_inactive.value)}, expected 5.75"
+    assert dut.weight_reg_active.value == to_fixed(5.75), f"dut.weight_reg_active was {from_fixed(dut.weight_reg_active.value)}, expected 5.75" 
+    assert dut.pe_weight_out.value == to_fixed(0.0), f"dut.pe_weight_out was {from_fixed(dut.pe_weight_out.value)}, expected 0.0"
+    assert dut.pe_psum_out.value == to_fixed(111.31640625), f"dut.pe_psum_out was {from_fixed(dut.pe_psum_out.value)}, expected 111.31640625"
+    assert dut.pe_input_out.value == to_fixed(19.359375), f"dut.pe_input_out was {from_fixed(dut.pe_input_out.value)}, expected 19.359375"
+    # End of test
