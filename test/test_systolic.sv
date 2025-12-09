@@ -2,23 +2,46 @@
 
 module test_systolic_tb;
 
+    import test_utils_pkg::*;
+    
     // Clock and reset
-    logic clk = 0;
+    logic clk = 1;
     logic rst;
 
-    // DUT signals
-    logic sys_accept_w_1;
-    logic sys_accept_w_2;
-    logic sys_switch_in;
+    // DUT left side inputs
+    logic [15:0] sys_data_in_11 = 0;
+    logic [15:0] sys_data_in_21 = 0;
+    logic sys_start = 0;
 
-    logic [15:0] sys_weight_in_11;
-    logic [15:0] sys_weight_in_12;
+    // DUT top side inputs
+    logic [15:0] sys_weight_in_11 = 0;
+    logic [15:0] sys_weight_in_12 = 0;
+    logic sys_accept_w_1 = 0;
+    logic sys_accept_w_2 = 0;
+    logic sys_switch_in = 0;
 
-    logic [15:0] sys_data_in_11;
-    logic [15:0] sys_data_in_21;
-
+    // DUT bottom side outputs
     wire [15:0] sys_data_out_21;
     wire [15:0] sys_data_out_22;
+    wire sys_valid_out_21;
+    wire sys_valid_out_22;
+
+    // Matrices for testing
+    matrix16_t matA = '{'{to_fixed(1.0), to_fixed(2.0)},
+                        '{to_fixed(3.0), to_fixed(4.0)},
+                        '{to_fixed(5.0), to_fixed(6.0)},
+                        '{to_fixed(7.0), to_fixed(8.0)} };
+
+    matrix16_t matW = '{'{to_fixed(1.0), to_fixed(0.0)},
+                        '{to_fixed(0.0), to_fixed(1.0)} };
+    // fixed16_t matA[][] = '{ '{(1.0), (2.0)}, // ok
+    //                         '{(3.0), (4.0)},
+    //                         '{(5.0), (6.0)},
+    //                         '{(7.0), (8.0)} };
+
+    // logic matrix16_t matW[2][2] = '{  '{(1.0), (0.0)},
+    //                             '{(0.0), (1.0)} };
+
 
 
     // Instantiate the DUT
@@ -26,35 +49,50 @@ module test_systolic_tb;
         .clk(clk),
         .rst(rst),
 
+        // DUT left side inputs
+        .sys_data_in_11(sys_data_in_11),
+        .sys_data_in_21(sys_data_in_21),
+        .sys_start(sys_start),
+
+        // DUT top side inputs
+        .sys_weight_in_11(sys_weight_in_11),
+        .sys_weight_in_12(sys_weight_in_12),
         .sys_accept_w_1(sys_accept_w_1),
         .sys_accept_w_2(sys_accept_w_2),
         .sys_switch_in(sys_switch_in),
 
-        .sys_weight_in_11(sys_weight_in_11),
-        .sys_weight_in_12(sys_weight_in_12),
-
-        .sys_data_in_11(sys_data_in_11),
-        .sys_data_in_21(sys_data_in_21),
-
+        // DUT bottom side outputs
         .sys_data_out_21(sys_data_out_21),
-        .sys_data_out_22(sys_data_out_22)
+        .sys_data_out_22(sys_data_out_22),
+        .sys_valid_out_21(sys_valid_out_21),
+        .sys_valid_out_22(sys_valid_out_22)
 
     );
 
     // Generate clock (10 ns period)
     always #5 clk = ~clk;
 
-    // --------------- Fixed-point helper (16-bit, frac=8) ----------------
-    function automatic logic [15:0] to_fixed (real val);
-        real scaled;
-        begin
-            scaled = val * 256.0; // 1 << 8
-            to_fixed = $rtoi(scaled) & 16'hFFFF;
-        end
-    endfunction
-
     // -------------------- Test Procedure --------------------
+    bit b;
     initial begin
+        
+        matrix16_t result;
+
+        allocMat(result, 4, 2);
+
+        matMult(matA, matW, result, 4, 2, 2);
+        
+        b = checkMatEqual(result, matA, 4, 2);
+        if (b) begin
+            $display("Matrix multiplication test passed.");
+        end else begin
+            $display("Matrix multiplication test failed.");
+            $display("Expected:");
+            printMat(matA, 4, 2);
+            $display("Got:");
+            printMat(result, 4, 2);
+        end
+
         // Initialize
         rst = 1;
         sys_accept_w_1 = 0;
@@ -72,10 +110,6 @@ module test_systolic_tb;
 
         // Release reset
         rst = 0;
-
-        // ---------------- Step by step replication of cocotb ----------------
-
-        // Load weight W1 (transposed)
         sys_weight_in_11 = to_fixed(-0.5792);
         sys_accept_w_1   = 1;
         @(posedge clk);

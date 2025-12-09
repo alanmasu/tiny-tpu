@@ -12,11 +12,6 @@ module systolic #(
     input logic [15:0] sys_data_in_21,
     input logic sys_start,    // start signal
 
-    output logic [15:0] sys_data_out_21,
-    output logic [15:0] sys_data_out_22,
-    output wire sys_valid_out_21, 
-    output wire sys_valid_out_22,
-
     // input signals from top of systolic array
     input logic [15:0] sys_weight_in_11, 
     input logic [15:0] sys_weight_in_12,
@@ -26,7 +21,13 @@ module systolic #(
     input logic sys_switch_in,               // switch signal copies weight from shadow buffer to active buffer. propagates from top left to bottom right
 
     input logic [15:0] ub_rd_col_size_in,
-    input logic ub_rd_col_size_valid_in
+    input logic ub_rd_col_size_valid_in,
+
+    // output signals from bottom side of systolic array
+    output logic [15:0] sys_data_out_21,
+    output logic [15:0] sys_data_out_22,
+    output wire sys_valid_out_21, 
+    output wire sys_valid_out_22
 );
 
     // input_out for each PE (left to right)
