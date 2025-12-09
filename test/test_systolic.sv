@@ -84,13 +84,13 @@ module test_systolic_tb;
         
         b = checkMatEqual(result, matA, 4, 2);
         if (b) begin
-            $display("Matrix multiplication test passed.");
+            $display("Test MAT MUL: OK");
         end else begin
-            $display("Matrix multiplication test failed.");
-            $display("Expected:");
-            printMat(matA, 4, 2);
+            $display("Test MAT MUL: FAILED");
             $display("Got:");
             printMat(result, 4, 2);
+            $display("Expected:");
+            printMat(matA, 4, 2);
         end
 
         // Initialize
