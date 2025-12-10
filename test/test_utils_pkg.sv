@@ -2,6 +2,7 @@ package test_utils_pkg;
 
     typedef bit[15:0] fixed16_t;
     typedef fixed16_t matrix16_t [][];
+    typedef fixed16_t vector16_t [];
 
 
      // --------------- Fixed-point (16-bit, frac=8) to logic ----------------
@@ -39,6 +40,9 @@ package test_utils_pkg;
 
     // --------------- Matrix Mult ----------------
     function automatic void matMult(ref matrix16_t A, ref matrix16_t B, ref matrix16_t C, input int M, input int N, input int K);
+        if (C == null) begin
+            allocMat(C, M, K);
+        end
         for (int i = 0; i < M; i++) begin
             for (int j = 0; j < K; j++) begin
                 bit signed [15:0] acc_result = 16'b0;
@@ -69,6 +73,13 @@ package test_utils_pkg;
         end
     endfunction
 
+    function automatic void freeMat(ref matrix16_t mat, input int rows);
+        for (int i = 0; i < rows; i++) begin
+            mat[i].delete();
+        end
+        mat.delete();
+    endfunction
+
     function automatic bit checkMatEqual(ref matrix16_t A, ref matrix16_t B, input int rows, input int cols);
         for (int i = 0; i < rows; i++) begin
             for (int j = 0; j < cols; j++) begin
@@ -79,5 +90,23 @@ package test_utils_pkg;
         end
         return 1;
     endfunction
+
+    function automatic void extractCol(ref matrix16_t mat, ref vector16_t col_vec, input int col_idx, input int rows);
+        if(col_vec == null) begin
+            col_vec = new[rows];
+        end
+        for (int i = 0; i < rows; i++) begin
+            col_vec[i] = mat[i][col_idx];
+        end
+    endfunction
     
+    function automatic void extractColReverse(ref matrix16_t mat, ref vector16_t col_vec, input int col_idx, input int rows);
+        if(col_vec == null) begin
+            col_vec = new[rows];
+        end
+        for (int i = 0; i < rows; i++) begin
+            col_vec[i] = mat[rows -1 - i][col_idx];
+        end
+    endfunction
+
 endpackage

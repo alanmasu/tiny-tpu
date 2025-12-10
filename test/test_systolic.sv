@@ -77,8 +77,9 @@ module test_systolic_tb;
     initial begin
         
         matrix16_t result;
+        vector16_t col_vec;
 
-        allocMat(result, 4, 2);
+        // allocMat(result, 4, 2);
 
         matMult(matA, matW, result, 4, 2, 2);
         
@@ -91,6 +92,34 @@ module test_systolic_tb;
             printMat(result, 4, 2);
             $display("Expected:");
             printMat(matA, 4, 2);
+        end
+
+        extractCol(result, col_vec, 1, 4);
+        b = 1;
+        foreach (col_vec[i]) begin
+            $display("col_vec[%0d] = %0.1f", i, from_fixed(col_vec[i]));
+            if (col_vec[i] !== matA[i][1]) begin
+                $display("Test EXTRACT COL: FAILED => col_vect[%0d] was %0.1f, expected %0.1f", i, from_fixed(col_vec[i]), from_fixed(matA[i][1]));
+                b = 0;
+                break;
+            end
+        end        
+        if (b) begin
+            $display("Test EXTRACT COL: OK");
+        end
+
+        extractColReverse(result, col_vec, 1, 4);
+        b = 1;
+        foreach (col_vec[i]) begin
+            $display("col_vec[%0d] = %0.1f", i, from_fixed(col_vec[i]));
+            if (col_vec[i] !== matA[4 -1 - i][1]) begin
+                $display("Test EXTRACT COL REVERSE: FAILED => col_vect[%0d] was %0.1f, expected %0.1f", i, from_fixed(col_vec[i]), from_fixed(matA[4 - 1 - i][1]));
+                b = 0;
+                break;
+            end
+        end        
+        if (b) begin
+            $display("Test EXTRACT COL REVERSE: OK");
         end
 
         // Initialize
