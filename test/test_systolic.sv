@@ -281,8 +281,19 @@ module test_systolic_tb;
         end else begin
             $display("Test #%0dc: FAILED - pe11.pe_input_out was %f, expected %f", testN, from_fixed(dut.pe11.pe_input_out), to_fixed(1.0));
         end
+
         #1;
         validating = 0;
+
+        testN = 3;
+        @(posedge clk);
+        #1;
+        cycle_count = cycle_count + 1;
+        sys_start = 0;
+        sys_accept_w_2 = 0;
+        sys_switch_in = 0;
+        sys_data_in_21 = a_row2[cycle_count - 1];
+        
 
 
         repeat (2) @(posedge clk);

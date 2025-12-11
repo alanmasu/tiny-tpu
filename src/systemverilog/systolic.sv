@@ -126,7 +126,7 @@ module systolic #(
         .pe_enabled(pe_enabled[0]),
 
         // South wires of the PE
-        .pe_psum_out(sys_psum_out_x1),
+        .pe_psum_out(sys_data_out_x1),
         .pe_weight_out(),
 
 
@@ -153,7 +153,7 @@ module systolic #(
         .pe_enabled(pe_enabled[1]),
 
         // South wires of the PE
-        .pe_psum_out(sys_psum_out_x2),
+        .pe_psum_out(sys_data_out_x2),
         .pe_weight_out(),
 
         // East wires of the PE
