@@ -11,13 +11,13 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="26.666 ns"></ZoomStartTime>
-      <ZoomEndTime time="64.144 ns"></ZoomEndTime>
-      <Cursor1Time time="110.000 ns"></Cursor1Time>
+      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="88.101 ns"></ZoomEndTime>
+      <Cursor1Time time="26.100 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="276"></NameColumnWidth>
-      <ValueColumnWidth column_width="104"></ValueColumnWidth>
+      <ValueColumnWidth column_width="100"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="22" />
    <wave_markers>
@@ -36,6 +36,8 @@
    <wvobject type="logic" fp_name="/test_pe_tb/dut/pe_enabled">
       <obj_property name="ElementShortName">pe_enabled</obj_property>
       <obj_property name="ObjectShortName">pe_enabled</obj_property>
+      <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
    </wvobject>
    <wvobject type="logic" fp_name="/test_pe_tb/valitading">
       <obj_property name="ElementShortName">valitading</obj_property>

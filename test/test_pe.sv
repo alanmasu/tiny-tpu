@@ -258,6 +258,7 @@ module test_pe_tb;
         pe_valid_in = 0;
         pe_input_in = to_fixed(0);
         pe_switch_in = 0;
+        pe_psum_in = to_fixed(-from_fixed(pe_psum_out));
         #1;
         valitading = 1'b1;
         //Cheking inteternal registers
@@ -287,6 +288,18 @@ module test_pe_tb;
             $display("Test #%0de OK", testN);
         end else begin
             $display("Test #%0de FAIL => pe_input_out was %f, expected %f", testN, from_fixed(pe_input_out), 19.359375);
+        end
+        #1;
+        valitading = 1'b0;
+
+        testN = 6;
+        @(posedge clk);
+        #1;
+        valitading = 1'b1;
+        if(pe_psum_out == to_fixed(0.0)) begin 
+            $display("Test #%0da OK", testN);
+        end else begin
+            $display("Test #%0da FAIL => pe_psum_out was %f, expected %f", testN, from_fixed(pe_psum_out), 0.0);
         end
         #1;
         valitading = 1'b0;
