@@ -1,0 +1,44 @@
+name: Aggiungi Label 'on develop' alle Issue Risolte
+
+on:
+  push:
+    branches:
+      - develop  # Esegui l'azione solo quando si fa un push su 'develop'
+    # Solo se stai usando la strategia 'merge' anziché 'squash and merge'
+    # puoi anche usare il pull_request: type: [closed] se il merge è il trigger.
+
+jobs:
+  label_issues:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trova Issue e Aggiungi Label
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          # Questo token è fornito automaticamente da GitHub ed è necessario per interagire con l'API
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Il pattern 'Fixes #N, Close #N, ecc.' è quello che cerca il comando
+          issue_numbers: ${{ steps.find_issues.outputs.issue_numbers }}
+          labels: on develop, Needs Review 🧐 # Le label da aggiungere (separate da virgola)
+
+      # Passo 1: Trova i numeri delle issue risolte dal merge
+      # Questo usa un'azione dedicata a parsare i messaggi di commit
+      - name: Get resolved issues
+        id: find_issues
+        # Questa action è molto utile per estrarre i riferimenti a issue
+        uses: actions-ecosystem/action-get-resolved-issues@v1
+        with:
+          # Qui devi specificare il commit range. 
+          # Per un push su 'develop', questo confronta il commit precedente con l'attuale.
+          token: ${{ secrets.GITHUB_TOKEN }}
+          sha_before: ${{ github.event.before }}
+          sha_after: ${{ github.event.after }}
+
+      # Passo 2: Aggiungi l'etichetta (label) trovata alle issue
+      - name: Add label to resolved issues
+        uses: actions-ecosystem/action-add-labels@v1
+        if: steps.find_issues.outputs.issue_numbers != ''
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          issue_numbers: ${{ steps.find_issues.outputs.issue_numbers }}
+          # Assicurati che questa label esista sul tuo repository!
+          labels: "on develop"
