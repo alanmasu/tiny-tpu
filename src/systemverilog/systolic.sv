@@ -8,13 +8,13 @@ module systolic #(
     input logic rst,
 
     // input signals from left side of systolic array
-    input logic [15:0] sys_data_in_11,
-    input logic [15:0] sys_data_in_21,
+    input logic [15:0] sys_data_in_1x,
+    input logic [15:0] sys_data_in_2x,
     input logic sys_start,    // start signal
 
     // input signals from top of systolic array
-    input logic [15:0] sys_weight_in_11, 
-    input logic [15:0] sys_weight_in_12,
+    input logic [15:0] sys_weight_in_x1, 
+    input logic [15:0] sys_weight_in_x2,
     input logic sys_accept_w_1,             // accept weight signal propagates only from top to bottom in column 1
     input logic sys_accept_w_2,             // accept weight signal propagates only from top to bottom in column 2
 
@@ -24,113 +24,136 @@ module systolic #(
     input logic ub_rd_col_size_valid_in,
 
     // output signals from bottom side of systolic array
-    output logic [15:0] sys_data_out_21,
-    output logic [15:0] sys_data_out_22,
-    output wire sys_valid_out_21, 
-    output wire sys_valid_out_22
+    output logic [15:0] sys_data_out_x1,
+    output logic [15:0] sys_data_out_x2,
+    output wire sys_valid_out_x1, 
+    output wire sys_valid_out_x2
 );
-
+    //West to East
     // input_out for each PE (left to right)
-    logic [15:0] pe_input_out_11;
-    logic [15:0] pe_input_out_21;
+    logic [15:0] pe_input_out_11;   // pe11 out to pe12 in
+    logic [15:0] pe_input_out_21;   // pe21 out to pe22 in
 
     // psum_out for each PE (top to bottom)
-    logic [15:0] pe_psum_out_11;
-    logic [15:0] pe_psum_out_12;
-
-    // weight_out for each PE (top to bottom)
-    logic [15:0] pe_weight_out_11;
-    logic [15:0] pe_weight_out_12;
+    logic [15:0] pe_psum_out_11;    // pe11 out to pe21 in
+    logic [15:0] pe_psum_out_12;    // pe12 out to pe22 in
+    logic [15:0] pe_weight_out_11;  // pe11 out to pe21 in
+    logic [15:0] pe_weight_out_12;  // pe12 out to pe22 in
+    wire pe_valid_out_11;   // pe11 out to pe21 in
+    wire pe_valid_out_21;   // pe12 out to pe22 in
 
     // switch_out for each PE
-    logic pe_switch_out_11;
-    logic pe_switch_out_12;
+    logic pe_switch_out_11;  // pe11 out to pe12 in
+    logic pe_switch_out_11;  // pe21 out to pe22 in
     
-    // valid_out for each PE (top to bottom)
-    wire pe_valid_out_11;   // this wire will connect the valid signal from pe11 to pe12
-    wire pe_valid_out_12;   // this wire will connect the valid signal from pe21 to pe22
 
     // PE columns to enable
     logic [1:0] pe_enabled;
 
+    // top left PE
     pe pe11 (
         .clk(clk),
         .rst(rst),
+
+        // North wires of PE
+        .pe_psum_in(16'b0),
+        .pe_weight_in(sys_weight_in_x1),
+        .pe_accept_w_in(sys_accept_w_1),
+
+        // West wires of PE
+        .pe_input_in(sys_data_in_1x),
+        .pe_valid_in(sys_start),
+        .pe_switch_in(sys_switch_in),
         .pe_enabled(pe_enabled[0]),
 
-        .pe_valid_in(sys_start),
-        .pe_valid_out(pe_valid_out_11), // valid out signal is now dispatched onto pe_valid_out_11
-
-        .pe_accept_w_in(sys_accept_w_1),
-        .pe_switch_in(sys_switch_in),
-        .pe_switch_out(pe_switch_out_11),
-
-        .pe_input_in(sys_data_in_11),
-        .pe_psum_in(16'b0),
-        .pe_weight_in(sys_weight_in_11),
-        .pe_input_out(pe_input_out_11),
+        // South wires of the PE
         .pe_psum_out(pe_psum_out_11),
-        .pe_weight_out(pe_weight_out_11)
+        .pe_weight_out(pe_weight_out_11),
+
+
+        // East wires of the PE
+        .pe_input_out(pe_input_out_11),
+        .pe_valid_out(pe_valid_out_11), 
+        .pe_switch_out(pe_switch_out_11)
     );
 
+    // top right PE
     pe pe12 (
         .clk(clk),
         .rst(rst),
+
+        // North wires of PE
+        .pe_psum_in(16'b0),
+        .pe_weight_in(sys_weight_in_x2),
+        .pe_accept_w_in(sys_accept_w_2),
+
+        // West wires of PE
+        .pe_input_in(sys_data_in_2x),
+        .pe_valid_in(pe_valid_out_11),
+        .pe_switch_in(sys_switch_in),
         .pe_enabled(pe_enabled[1]),
 
-        .pe_valid_in(pe_valid_out_11),
-        .pe_valid_out(pe_valid_out_12),
-
-        .pe_accept_w_in(sys_accept_w_2),
-        .pe_switch_in(pe_switch_out_11),
-        .pe_switch_out(pe_switch_out_12),
-
-        .pe_input_in(pe_input_out_11),
-        .pe_psum_in(16'b0),
-        .pe_weight_in(sys_weight_in_12),
-        .pe_input_out(),
+        // South wires of the PE
         .pe_psum_out(pe_psum_out_12),
-        .pe_weight_out(pe_weight_out_12)
+        .pe_weight_out(pe_weight_out_12),
+
+        // East wires of the PE
+        .pe_switch_out(pe_switch_out_12),
+        .pe_input_out(pe_input_out_11),
+        .pe_valid_out(pe_valid_out_x1) 
     );
 
+    // bottom left PE
     pe pe21 (
         .clk(clk),
         .rst(rst),
-        .pe_enabled(pe_enabled[0]),
 
-        .pe_valid_in(pe_valid_out_11),
-        .pe_valid_out(sys_valid_out_21),
-
-        .pe_accept_w_in(sys_accept_w_1),
-        .pe_switch_in(pe_switch_out_11),
-        .pe_switch_out(),
-
-        .pe_input_in(sys_data_in_21),
+        // North wires of PE
         .pe_psum_in(pe_psum_out_11),
         .pe_weight_in(pe_weight_out_11),
+        .pe_accept_w_in(pe_valid_out_11),
+
+        // West wires of PE
+        .pe_input_in(sys_data_in_2x),
+        .pe_valid_in(sys_start),
+        .pe_switch_in(sys_switch_11),
+        .pe_enabled(pe_enabled[0]),
+
+        // South wires of the PE
+        .pe_psum_out(sys_psum_out_x1),
+        .pe_weight_out(),
+
+
+        // East wires of the PE
         .pe_input_out(pe_input_out_21),
-        .pe_psum_out(sys_data_out_21),
-        .pe_weight_out()
+        .pe_valid_out(pe_valid_out_21), 
+        .pe_switch_out()
     );
 
-    pe pe22 ( // connect this to pe_valid out of pe 21? 
+    // bottom right PE
+    pe pe22 (
         .clk(clk),
         .rst(rst),
+
+        // North wires of PE
+        .pe_psum_in(16'b0),
+        .pe_weight_in(pe_weight_out_12),
+        .pe_accept_w_in(pe_valid_out_12),
+
+        // West wires of PE
+        .pe_input_in(sys_data_in_2x),
+        .pe_valid_in(sys_start),
+        .pe_switch_in(sys_switch_in),
         .pe_enabled(pe_enabled[1]),
 
-        .pe_valid_in(pe_valid_out_12),
-        .pe_valid_out(sys_valid_out_22),
+        // South wires of the PE
+        .pe_psum_out(pe_psum_out_12),
+        .pe_weight_out(pe_weight_out_12),
 
-        .pe_accept_w_in(sys_accept_w_2),
-        .pe_switch_in(pe_switch_out_12),
-        .pe_switch_out(),
-
-        .pe_input_in(pe_input_out_21),
-        .pe_psum_in(pe_psum_out_12),
-        .pe_weight_in(pe_weight_out_12),
-        .pe_input_out(),
-        .pe_psum_out(sys_data_out_22),
-        .pe_weight_out()
+        // East wires of the PE
+        .pe_switch_out(pe_switch_out_12),
+        .pe_input_out(pe_input_out_11),
+        .pe_valid_out(pe_valid_out_x1) 
     );
 
     always @ (posedge clk or posedge rst) begin

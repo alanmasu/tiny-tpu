@@ -38,6 +38,14 @@ package test_utils_pkg;
         end
     endfunction
 
+    // Print Vector
+    function automatic void printVec(ref vector16_t input_vector, input int length);
+        foreach (input_vector[i]) begin
+            $write("%0.2f ", from_fixed(input_vector[i]));
+        end
+        $write("\n");
+    endfunction
+
     // --------------- Matrix Mult ----------------
     function automatic void matMult(ref matrix16_t A, ref matrix16_t B, ref matrix16_t C, input int M, input int N, input int K);
         if (C == null) begin
@@ -107,6 +115,13 @@ package test_utils_pkg;
         for (int i = 0; i < rows; i++) begin
             col_vec[i] = mat[rows -1 - i][col_idx];
         end
+    endfunction
+
+    function automatic void extractRow(ref matrix16_t mat, ref vector16_t row_vec, input int row_idx, input int cols);
+        if(row_vec == null) begin
+            row_vec = new[cols];
+        end
+        row_vec = mat[row_idx];
     endfunction
 
 endpackage

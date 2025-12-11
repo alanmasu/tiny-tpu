@@ -7,19 +7,20 @@
          <top_modules>
             <top_module name="glbl" />
             <top_module name="test_systolic_tb" />
+            <top_module name="test_utils_pkg" />
          </top_modules>
       </db_ref>
    </db_ref_list>
    <zoom_setting>
       <ZoomStartTime time="0.000 ns"></ZoomStartTime>
-      <ZoomEndTime time="295.601 ns"></ZoomEndTime>
-      <Cursor1Time time="2.016 ns"></Cursor1Time>
+      <ZoomEndTime time="153.801 ns"></ZoomEndTime>
+      <Cursor1Time time="83.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="276"></NameColumnWidth>
-      <ValueColumnWidth column_width="120"></ValueColumnWidth>
+      <ValueColumnWidth column_width="116"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="11" />
+   <WVObjectSize size="12" />
    <wvobject type="logic" fp_name="/test_systolic_tb/clk">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
@@ -45,6 +46,8 @@
    <wvobject type="array" fp_name="/test_systolic_tb/sys_weight_in_11">
       <obj_property name="ElementShortName">sys_weight_in_11[15:0]</obj_property>
       <obj_property name="ObjectShortName">sys_weight_in_11[15:0]</obj_property>
+      <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
       <obj_property name="Radix">REALRADIX</obj_property>
       <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
       <obj_property name="radix_fractionWidth">8</obj_property>
@@ -53,6 +56,8 @@
    <wvobject type="array" fp_name="/test_systolic_tb/sys_weight_in_12">
       <obj_property name="ElementShortName">sys_weight_in_12[15:0]</obj_property>
       <obj_property name="ObjectShortName">sys_weight_in_12[15:0]</obj_property>
+      <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
       <obj_property name="Radix">REALRADIX</obj_property>
       <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
       <obj_property name="radix_fractionWidth">8</obj_property>
@@ -61,6 +66,8 @@
    <wvobject type="array" fp_name="/test_systolic_tb/sys_data_in_11">
       <obj_property name="ElementShortName">sys_data_in_11[15:0]</obj_property>
       <obj_property name="ObjectShortName">sys_data_in_11[15:0]</obj_property>
+      <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
       <obj_property name="Radix">REALRADIX</obj_property>
       <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
       <obj_property name="radix_fractionWidth">8</obj_property>
@@ -69,6 +76,8 @@
    <wvobject type="array" fp_name="/test_systolic_tb/sys_data_in_21">
       <obj_property name="ElementShortName">sys_data_in_21[15:0]</obj_property>
       <obj_property name="ObjectShortName">sys_data_in_21[15:0]</obj_property>
+      <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
       <obj_property name="Radix">REALRADIX</obj_property>
       <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
       <obj_property name="radix_fractionWidth">8</obj_property>
@@ -89,5 +98,51 @@
       <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
       <obj_property name="radix_fractionWidth">8</obj_property>
       <obj_property name="radix_otherWidth">0</obj_property>
+   </wvobject>
+   <wvobject type="group" fp_name="group28">
+      <obj_property name="label">Automatic shifting</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject type="array" fp_name="/test_systolic_tb/cycle_count">
+         <obj_property name="ElementShortName">cycle_count[31:0]</obj_property>
+         <obj_property name="ObjectShortName">cycle_count[31:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/w1">
+         <obj_property name="ElementShortName">w1[15:0]</obj_property>
+         <obj_property name="ObjectShortName">w1[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="Reversed">false</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/w2">
+         <obj_property name="ElementShortName">w2[15:0]</obj_property>
+         <obj_property name="ObjectShortName">w2[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="Reversed">false</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/a1">
+         <obj_property name="ElementShortName">a1[15:0]</obj_property>
+         <obj_property name="ObjectShortName">a1[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="Reversed">false</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/a2">
+         <obj_property name="ElementShortName">a2[15:0]</obj_property>
+         <obj_property name="ObjectShortName">a2[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="Reversed">false</obj_property>
+      </wvobject>
    </wvobject>
 </wave_config>
