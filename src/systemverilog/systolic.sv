@@ -10,7 +10,7 @@ module systolic #(
     // input signals from left side of systolic array
     input logic [15:0] sys_data_in_1x,
     input logic [15:0] sys_data_in_2x,
-    input logic sys_start,    // start signal
+    input logic sys_start,    // aka Switch signal
 
     // input signals from top of systolic array
     input logic [15:0] sys_weight_in_x1, 
@@ -121,7 +121,7 @@ module systolic #(
 
         // West wires of PE
         .pe_input_in(sys_data_in_2x),
-        .pe_valid_in(sys_start),
+        .pe_valid_in(pe_valid_out_11),
         .pe_switch_in(sys_switch_11),
         .pe_enabled(pe_enabled[0]),
 
@@ -133,7 +133,7 @@ module systolic #(
         // East wires of the PE
         .pe_input_out(pe_input_out_21),
         .pe_valid_out(pe_valid_out_21), 
-        .pe_switch_out()
+        .pe_switch_out(pe_valid_out_21)
     );
 
     // bottom right PE
@@ -148,7 +148,7 @@ module systolic #(
 
         // West wires of PE
         .pe_input_in(sys_data_in_2x),
-        .pe_valid_in(sys_start),
+        .pe_valid_in(pe_valid_out_21),
         .pe_switch_in(sys_switch_in),
         .pe_enabled(pe_enabled[1]),
 
