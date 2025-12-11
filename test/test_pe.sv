@@ -15,6 +15,7 @@ module test_pe_tb;
 
     wire pe_valid_out;  // assuming
     wire [15:0] pe_input_out, pe_weight_out, pe_psum_out; // adjust as needed
+    wire pe_accept_w_out;
 
     pe dut (
         .clk(clk),
@@ -29,6 +30,7 @@ module test_pe_tb;
         .pe_valid_out(pe_valid_out),
         .pe_input_out(pe_input_out),
         .pe_weight_out(pe_weight_out),
+        .pe_accept_w_out(pe_accept_w_out),
         .pe_psum_out(pe_psum_out)
     );
 
@@ -120,6 +122,11 @@ module test_pe_tb;
         end else begin
             $display("Test #%0dc FAIL => pe_weight_out was %f, expected %f", testN, from_fixed(pe_weight_out), 4.34765625);
         end
+        if(pe_accept_w_out == 1) begin
+            $display("Test #%0dd OK", testN);
+        end else begin
+            $display("Test #%0dd FAIL => pe_accept_w_out was %0d, expected %0d", testN, pe_accept_w_out, 1);
+        end
         #1;
         valitading = 1'b0;
 
@@ -162,6 +169,11 @@ module test_pe_tb;
         end else begin
             $display("Test #%0de FAIL => pe_input_out was %f, expected %f", testN, from_fixed(pe_input_out), 2.0);
         end
+        if(pe_accept_w_out == 1) begin
+            $display("Test #%0df OK", testN);
+        end else begin
+            $display("Test #%0df FAIL => pe_accept_w_out was %0d, expected %0d", testN, pe_accept_w_out, 1);
+        end
         #1;
         valitading = 1'b0;
 
@@ -203,6 +215,11 @@ module test_pe_tb;
             $display("Test #%0de OK", testN);
         end else begin
             $display("Test #%0de FAIL => pe_input_out was %f, expected %f", testN, from_fixed(pe_input_out), -3.3984375);
+        end
+        if(pe_accept_w_out == 1) begin
+            $display("Test #%0df OK", testN);
+        end else begin
+            $display("Test #%0df FAIL => pe_accept_w_out was %0d, expected %0d", testN, pe_accept_w_out, 1);
         end
         #1;
         valitading = 1'b0;
@@ -258,6 +275,7 @@ module test_pe_tb;
         pe_valid_in = 0;
         pe_input_in = to_fixed(0);
         pe_switch_in = 0;
+        pe_psum_in = to_fixed(-from_fixed(pe_psum_out));
         #1;
         valitading = 1'b1;
         //Cheking inteternal registers
@@ -287,6 +305,18 @@ module test_pe_tb;
             $display("Test #%0de OK", testN);
         end else begin
             $display("Test #%0de FAIL => pe_input_out was %f, expected %f", testN, from_fixed(pe_input_out), 19.359375);
+        end
+        #1;
+        valitading = 1'b0;
+
+        testN = 6;
+        @(posedge clk);
+        #1;
+        valitading = 1'b1;
+        if(pe_psum_out == to_fixed(0.0)) begin 
+            $display("Test #%0da OK", testN);
+        end else begin
+            $display("Test #%0da FAIL => pe_psum_out was %f, expected %f", testN, from_fixed(pe_psum_out), 0.0);
         end
         #1;
         valitading = 1'b0;
