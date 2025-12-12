@@ -48,7 +48,7 @@ module systolic #(
 
     // switch_out for each PE
     logic pe_switch_out_11;  // pe11 out to pe12 in
-    logic pe_switch_out_11;  // pe21 out to pe22 in
+    logic pe_switch_out_12;  // pe21 out to pe22 in
     
 
     // PE columns to enable
@@ -122,7 +122,7 @@ module systolic #(
         // West wires of PE
         .pe_input_in(sys_data_in_2x),
         .pe_valid_in(pe_valid_out_11),
-        .pe_switch_in(sys_switch_11),
+        .pe_switch_in(pe_switch_out_11),
         .pe_enabled(pe_enabled[0]),
 
         // South wires of the PE
@@ -149,7 +149,7 @@ module systolic #(
         // West wires of PE
         .pe_input_in(sys_data_in_2x),
         .pe_valid_in(pe_valid_out_21),
-        .pe_switch_in(sys_switch_in),
+        .pe_switch_in(pe_switch_out_12),
         .pe_enabled(pe_enabled[1]),
 
         // South wires of the PE

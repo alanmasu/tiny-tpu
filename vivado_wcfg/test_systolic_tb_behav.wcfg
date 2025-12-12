@@ -12,15 +12,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
-      <ZoomEndTime time="86.901 ns"></ZoomEndTime>
-      <Cursor1Time time="51.100 ns"></Cursor1Time>
+      <ZoomStartTime time="27.583 ns"></ZoomStartTime>
+      <ZoomEndTime time="137.784 ns"></ZoomEndTime>
+      <Cursor1Time time="100.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="276"></NameColumnWidth>
       <ValueColumnWidth column_width="112"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="18" />
+   <WVObjectSize size="25" />
    <wave_markers>
       <marker label="" time="49937" />
    </wave_markers>
@@ -55,7 +55,6 @@
    <wvobject type="group" fp_name="group145">
       <obj_property name="label">pe_accept_w_in</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject type="logic" fp_name="/test_systolic_tb/dut/pe11/pe_accept_w_in">
          <obj_property name="DisplayName">label</obj_property>
          <obj_property name="ElementShortName">pe_accept_w_in</obj_property>
@@ -84,7 +83,6 @@
    <wvobject type="group" fp_name="group140">
       <obj_property name="label">pe_valid_in</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject type="logic" fp_name="/test_systolic_tb/dut/pe11/pe_valid_in">
          <obj_property name="DisplayName">label</obj_property>
          <obj_property name="ElementShortName">pe_valid_in</obj_property>
@@ -110,6 +108,14 @@
          <obj_property name="label">pe22_valid_in</obj_property>
       </wvobject>
    </wvobject>
+   <wvobject type="logic" fp_name="/test_systolic_tb/dut/sys_switch_in">
+      <obj_property name="ElementShortName">sys_switch_in</obj_property>
+      <obj_property name="ObjectShortName">sys_switch_in</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/test_systolic_tb/dut/sys_accept_w_1">
+      <obj_property name="ElementShortName">sys_accept_w_1</obj_property>
+      <obj_property name="ObjectShortName">sys_accept_w_1</obj_property>
+   </wvobject>
    <wvobject type="array" fp_name="/test_systolic_tb/sys_weight_in_11">
       <obj_property name="ElementShortName">sys_weight_in_11[15:0]</obj_property>
       <obj_property name="ObjectShortName">sys_weight_in_11[15:0]</obj_property>
@@ -119,6 +125,10 @@
       <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
       <obj_property name="radix_fractionWidth">8</obj_property>
       <obj_property name="radix_otherWidth">0</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/test_systolic_tb/dut/sys_accept_w_2">
+      <obj_property name="ElementShortName">sys_accept_w_2</obj_property>
+      <obj_property name="ObjectShortName">sys_accept_w_2</obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/test_systolic_tb/sys_weight_in_12">
       <obj_property name="ElementShortName">sys_weight_in_12[15:0]</obj_property>
@@ -130,10 +140,14 @@
       <obj_property name="radix_fractionWidth">8</obj_property>
       <obj_property name="radix_otherWidth">0</obj_property>
    </wvobject>
+   <wvobject type="logic" fp_name="/test_systolic_tb/dut/sys_start">
+      <obj_property name="ElementShortName">sys_start</obj_property>
+      <obj_property name="ObjectShortName">sys_start</obj_property>
+   </wvobject>
    <wvobject type="array" fp_name="/test_systolic_tb/sys_data_in_11">
       <obj_property name="ElementShortName">sys_data_in_11[15:0]</obj_property>
       <obj_property name="ObjectShortName">sys_data_in_11[15:0]</obj_property>
-      <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+      <obj_property name="CustomSignalColor">#FF00FF</obj_property>
       <obj_property name="UseCustomSignalColor">true</obj_property>
       <obj_property name="Radix">REALRADIX</obj_property>
       <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
@@ -143,7 +157,7 @@
    <wvobject type="array" fp_name="/test_systolic_tb/sys_data_in_21">
       <obj_property name="ElementShortName">sys_data_in_21[15:0]</obj_property>
       <obj_property name="ObjectShortName">sys_data_in_21[15:0]</obj_property>
-      <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+      <obj_property name="CustomSignalColor">#FF00FF</obj_property>
       <obj_property name="UseCustomSignalColor">true</obj_property>
       <obj_property name="Radix">REALRADIX</obj_property>
       <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
@@ -162,17 +176,17 @@
       <obj_property name="label">Outputs</obj_property>
       <obj_property name="DisplayName">label</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/test_systolic_tb/sys_data_out_21">
-      <obj_property name="ElementShortName">sys_data_out_21[15:0]</obj_property>
-      <obj_property name="ObjectShortName">sys_data_out_21[15:0]</obj_property>
+   <wvobject type="array" fp_name="/test_systolic_tb/sys_data_out_x1">
+      <obj_property name="ElementShortName">sys_data_out_x1[15:0]</obj_property>
+      <obj_property name="ObjectShortName">sys_data_out_x1[15:0]</obj_property>
       <obj_property name="Radix">REALRADIX</obj_property>
       <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
       <obj_property name="radix_fractionWidth">8</obj_property>
       <obj_property name="radix_otherWidth">0</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/test_systolic_tb/sys_data_out_22">
-      <obj_property name="ElementShortName">sys_data_out_22[15:0]</obj_property>
-      <obj_property name="ObjectShortName">sys_data_out_22[15:0]</obj_property>
+   <wvobject type="array" fp_name="/test_systolic_tb/sys_data_out_x2">
+      <obj_property name="ElementShortName">sys_data_out_x2[15:0]</obj_property>
+      <obj_property name="ObjectShortName">sys_data_out_x2[15:0]</obj_property>
       <obj_property name="Radix">REALRADIX</obj_property>
       <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
       <obj_property name="radix_fractionWidth">8</obj_property>
@@ -181,19 +195,10 @@
    <wvobject type="group" fp_name="group99">
       <obj_property name="label">Out as INT</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <wvobject type="array" fp_name="/test_systolic_tb/sys_data_out_21">
-         <obj_property name="ElementShortName">sys_data_out_21[15:0]</obj_property>
-         <obj_property name="ObjectShortName">sys_data_out_21[15:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/test_systolic_tb/sys_data_out_22">
-         <obj_property name="ElementShortName">sys_data_out_22[15:0]</obj_property>
-         <obj_property name="ObjectShortName">sys_data_out_22[15:0]</obj_property>
-      </wvobject>
    </wvobject>
    <wvobject type="group" fp_name="group103">
       <obj_property name="label">PE 11</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject type="logic" fp_name="/test_systolic_tb/dut/pe11/pe_enabled">
          <obj_property name="ElementShortName">pe_enabled</obj_property>
          <obj_property name="ObjectShortName">pe_enabled</obj_property>
@@ -265,6 +270,218 @@
          <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
          <obj_property name="radix_fractionWidth">8</obj_property>
          <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject type="group" fp_name="group151">
+      <obj_property name="label">PE12</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject type="logic" fp_name="/test_systolic_tb/dut/pe12/pe_enabled">
+         <obj_property name="ElementShortName">pe_enabled</obj_property>
+         <obj_property name="ObjectShortName">pe_enabled</obj_property>
+      </wvobject>
+      <wvobject fp_name="divider108" type="divider">
+         <obj_property name="label">North IN</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/dut/pe12/pe_psum_in">
+         <obj_property name="ElementShortName">pe_psum_in[15:0]</obj_property>
+         <obj_property name="ObjectShortName">pe_psum_in[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/dut/pe12/pe_weight_in">
+         <obj_property name="ElementShortName">pe_weight_in[15:0]</obj_property>
+         <obj_property name="ObjectShortName">pe_weight_in[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/test_systolic_tb/dut/pe12/pe_accept_w_in">
+         <obj_property name="ElementShortName">pe_accept_w_in</obj_property>
+         <obj_property name="ObjectShortName">pe_accept_w_in</obj_property>
+      </wvobject>
+      <wvobject fp_name="divider109" type="divider">
+         <obj_property name="label">Internal Regs</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/dut/pe12/weight_reg_inactive">
+         <obj_property name="ElementShortName">weight_reg_inactive[15:0]</obj_property>
+         <obj_property name="ObjectShortName">weight_reg_inactive[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/test_systolic_tb/dut/pe12/pe_switch_in">
+         <obj_property name="ElementShortName">pe_switch_in</obj_property>
+         <obj_property name="ObjectShortName">pe_switch_in</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/dut/pe12/weight_reg_active">
+         <obj_property name="ElementShortName">weight_reg_active[15:0]</obj_property>
+         <obj_property name="ObjectShortName">weight_reg_active[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject fp_name="divider146" type="divider">
+         <obj_property name="label">Output + terms</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/dut/pe12/pe_input_out">
+         <obj_property name="ElementShortName">pe_input_out[15:0]</obj_property>
+         <obj_property name="ObjectShortName">pe_input_out[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/dut/pe12/pe_psum_out">
+         <obj_property name="ElementShortName">pe_psum_out[15:0]</obj_property>
+         <obj_property name="ObjectShortName">pe_psum_out[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject type="group" fp_name="group165">
+      <obj_property name="label">PE21</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject type="logic" fp_name="/test_systolic_tb/dut/pe21/pe_enabled">
+         <obj_property name="ElementShortName">pe_enabled</obj_property>
+         <obj_property name="ObjectShortName">pe_enabled</obj_property>
+      </wvobject>
+      <wvobject fp_name="divider108" type="divider">
+         <obj_property name="label">North IN</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/dut/pe21/pe_psum_in">
+         <obj_property name="ElementShortName">pe_psum_in[15:0]</obj_property>
+         <obj_property name="ObjectShortName">pe_psum_in[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/dut/pe21/pe_weight_in">
+         <obj_property name="ElementShortName">pe_weight_in[15:0]</obj_property>
+         <obj_property name="ObjectShortName">pe_weight_in[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/test_systolic_tb/dut/pe21/pe_accept_w_in">
+         <obj_property name="ElementShortName">pe_accept_w_in</obj_property>
+         <obj_property name="ObjectShortName">pe_accept_w_in</obj_property>
+      </wvobject>
+      <wvobject fp_name="divider109" type="divider">
+         <obj_property name="label">Internal Regs</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/dut/pe21/weight_reg_inactive">
+         <obj_property name="ElementShortName">weight_reg_inactive[15:0]</obj_property>
+         <obj_property name="ObjectShortName">weight_reg_inactive[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/test_systolic_tb/dut/pe21/pe_switch_in">
+         <obj_property name="ElementShortName">pe_switch_in</obj_property>
+         <obj_property name="ObjectShortName">pe_switch_in</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/dut/pe21/weight_reg_active">
+         <obj_property name="ElementShortName">weight_reg_active[15:0]</obj_property>
+         <obj_property name="ObjectShortName">weight_reg_active[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject fp_name="divider146" type="divider">
+         <obj_property name="label">Output + terms</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/dut/pe21/pe_input_out">
+         <obj_property name="ElementShortName">pe_input_out[15:0]</obj_property>
+         <obj_property name="ObjectShortName">pe_input_out[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/dut/pe21/pe_psum_in">
+         <obj_property name="ElementShortName">pe_psum_in[15:0]</obj_property>
+         <obj_property name="ObjectShortName">pe_psum_in[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/dut/pe21/pe_psum_out">
+         <obj_property name="ElementShortName">pe_psum_out[15:0]</obj_property>
+         <obj_property name="ObjectShortName">pe_psum_out[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject type="group" fp_name="group180">
+      <obj_property name="label">PE22</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="divider108" type="divider">
+         <obj_property name="label">North IN</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/dut/pe22/pe_psum_in">
+         <obj_property name="ElementShortName">pe_psum_in[15:0]</obj_property>
+         <obj_property name="ObjectShortName">pe_psum_in[15:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/dut/pe22/pe_weight_in">
+         <obj_property name="ElementShortName">pe_weight_in[15:0]</obj_property>
+         <obj_property name="ObjectShortName">pe_weight_in[15:0]</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/test_systolic_tb/dut/pe22/pe_accept_w_in">
+         <obj_property name="ElementShortName">pe_accept_w_in</obj_property>
+         <obj_property name="ObjectShortName">pe_accept_w_in</obj_property>
+      </wvobject>
+      <wvobject fp_name="divider109" type="divider">
+         <obj_property name="label">Internal Regs</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/test_systolic_tb/dut/pe22/pe_switch_in">
+         <obj_property name="ElementShortName">pe_switch_in</obj_property>
+         <obj_property name="ObjectShortName">pe_switch_in</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/dut/pe22/weight_reg_active">
+         <obj_property name="ElementShortName">weight_reg_active[15:0]</obj_property>
+         <obj_property name="ObjectShortName">weight_reg_active[15:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/dut/pe22/weight_reg_inactive">
+         <obj_property name="ElementShortName">weight_reg_inactive[15:0]</obj_property>
+         <obj_property name="ObjectShortName">weight_reg_inactive[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="divider146" type="divider">
+         <obj_property name="label">Output + terms</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/dut/pe22/pe_input_out">
+         <obj_property name="ElementShortName">pe_input_out[15:0]</obj_property>
+         <obj_property name="ObjectShortName">pe_input_out[15:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/dut/pe22/pe_psum_in">
+         <obj_property name="ElementShortName">pe_psum_in[15:0]</obj_property>
+         <obj_property name="ObjectShortName">pe_psum_in[15:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/dut/pe22/pe_psum_out">
+         <obj_property name="ElementShortName">pe_psum_out[15:0]</obj_property>
+         <obj_property name="ObjectShortName">pe_psum_out[15:0]</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>

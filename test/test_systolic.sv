@@ -26,8 +26,8 @@ module test_systolic_tb;
     logic sys_switch_in = 0;
 
     // DUT bottom side outputs
-    wire [15:0] sys_data_out_21;
-    wire [15:0] sys_data_out_22;
+    wire [15:0] sys_data_out_x1;
+    wire [15:0] sys_data_out_x2;
     wire sys_valid_out_21;
     wire sys_valid_out_22;
 
@@ -78,10 +78,10 @@ module test_systolic_tb;
         .sys_switch_in(sys_switch_in),
 
         // DUT bottom side outputs
-        .sys_data_out_x1(sys_data_out_21),
-        .sys_data_out_x2(sys_data_out_22),
-        .sys_valid_out_x1(sys_valid_out_21),
-        .sys_valid_out_x2(sys_valid_out_22)
+        .sys_data_out_x1(sys_data_out_x1),
+        .sys_data_out_x2(sys_data_out_x2),
+        .sys_valid_out_x1(sys_valid_out_1),
+        .sys_valid_out_x2(sys_valid_out_2)
 
     );
 
@@ -158,7 +158,7 @@ module test_systolic_tb;
         // allocMat(result, 2, 4);
 
         // //Disabled test for matMult cause we don't have an identity matrix starting by now
-        // matMult(matA, matW, result, 2, 2, 2);
+        matMult(matA, matW, result, 2, 2, 2);
         
         // b = checkMatEqual(result, matA, 2, 2);
         // if (b) begin
@@ -294,8 +294,47 @@ module test_systolic_tb;
         sys_switch_in = 0;
         sys_data_in_21 = a_row2[cycle_count - 1];
         
+        @(posedge clk);
+        #1; 
+        validating = 1;
+        if(sys_data_out_x1 == result[0][0]) begin
+            $display("Test #%0d: OK", testN);
+        end else begin
+            $display("Test #%0d: FAILED -> sys_data_out_x1 was: %f, expected: %f", testN, from_fixed(sys_data_out_x1), from_fixed(result[0][0]));
+        end
+        #1;
+        validating = 0;
 
+        testN = 4;
+        @(posedge clk);
+        #1; 
+        validating = 1;
+        if(sys_data_out_x1 == result[1][0]) begin
+            $display("Test #%0da: OK", testN);
+        end else begin
+            $display("Test #%0da: FAILED -> sys_data_out_x1 was: %f, expected: %f", testN, from_fixed(sys_data_out_x1), from_fixed(result[1][0]));
+        end
+        if(sys_data_out_x2 == result[0][1]) begin
+            $display("Test #%0db: OK", testN);
+        end else begin
+            $display("Test #%0db: FAILED -> sys_data_out_x2 was: %f, expected: %f", testN, from_fixed(sys_data_out_x2), from_fixed(result[0][1]));
+        end
+        #1;
+        validating = 0;
 
+        testN = 5;
+        @(posedge clk);
+        #1; 
+        validating = 1;
+        if(sys_data_out_x2 == result[1][1]) begin
+            $display("Test #%0d: OK", testN);
+        end else begin
+            $display("Test #%0d: FAILED -> sys_data_out_x2 was: %f, expected: %f", testN, from_fixed(sys_data_out_x2), from_fixed(result[1][1]));
+        end
+        #1;
+        validating = 0;
+        
+        testN = 6;
         repeat (2) @(posedge clk);
 
         $display("Test completed.");
