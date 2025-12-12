@@ -147,10 +147,10 @@ module test_pe_tb;
         end else begin
             $display("Test #%0da FAIL => weight_reg_inactive was %f, expected %f", testN, from_fixed(dut.weight_reg_inactive), 10.6015625);
         end
-        if(dut.weight_reg_active == to_fixed(4.34765625)) begin
+        if(dut.weight_reg_active == to_fixed(10.6015625)) begin
             $display("Test #%0db OK", testN);
         end else begin
-            $display("Test #%0db FAIL => weight_reg_active was %f, expected %f", testN, from_fixed(dut.weight_reg_active), 4.34765625);
+            $display("Test #%0db FAIL => weight_reg_active was %f, expected %f", testN, from_fixed(dut.weight_reg_active), 10.6015625);
         end
         //Checking south ouptut
         if(pe_weight_out == to_fixed(10.6015625)) begin
@@ -194,10 +194,10 @@ module test_pe_tb;
         end else begin
             $display("Test #%0da FAIL => weight_reg_inactive was %f, expected %f", testN, from_fixed(dut.weight_reg_inactive), 5.75);
         end 
-        if(dut.weight_reg_active == to_fixed(10.6015625)) begin
+        if(dut.weight_reg_active == to_fixed(5.75)) begin
             $display("Test #%0db OK", testN);
         end else begin
-            $display("Test #%0db FAIL => weight_reg_inactive was %f, expected %f", testN, from_fixed(dut.weight_reg_active), 10.6015625);
+            $display("Test #%0db FAIL => weight_reg_inactive was %f, expected %f", testN, from_fixed(dut.weight_reg_active), 5.75);
         end 
         //Checking south ouptut
         if(pe_weight_out == to_fixed(5.75)) begin
@@ -205,10 +205,10 @@ module test_pe_tb;
         end else begin
             $display("Test #%0dc FAIL => pe_weight_out was %f, expected %f", testN, from_fixed(pe_weight_out), 5.75);
         end
-        if(pe_psum_out == to_fixed(8.6953125)) begin 
+        if(pe_psum_out == to_fixed(21.203125)) begin 
             $display("Test #%0dd OK", testN);
         end else begin
-            $display("Test #%0dd FAIL => pe_psum_out was %f, expected %f", testN, from_fixed(pe_psum_out), 8.6953125);
+            $display("Test #%0dd FAIL => pe_psum_out was %f, expected %f", testN, from_fixed(pe_psum_out), 21.203125);
         end
         //Cheching east ouptut
         if(pe_input_out == to_fixed(-3.3984375)) begin
@@ -252,10 +252,10 @@ module test_pe_tb;
         end else begin
             $display("Test #%0dc FAIL => pe_weight_out was %f, expected %f", testN, from_fixed(pe_weight_out), 5.75);
         end
-        if(pe_psum_out == to_fixed(-36.027344)) begin 
+        if(pe_psum_out == to_fixed(-19.5390625)) begin 
             $display("Test #%0dd OK", testN);
         end else begin
-            $display("Test #%0dd FAIL => pe_psum_out was %f, expected %f", testN, from_fixed(pe_psum_out), -36.027344);
+            $display("Test #%0dd FAIL => pe_psum_out was %f, expected %f", testN, from_fixed(pe_psum_out), -19.5390625);
         end
         //Cheching east ouptut
         if(pe_input_out == to_fixed(19.359375)) begin

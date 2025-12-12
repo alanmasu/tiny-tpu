@@ -10,6 +10,7 @@ module pe (
 	pe_enabled,
 	pe_psum_out,
 	pe_weight_out,
+	pe_accept_w_out,
 	pe_input_out,
 	pe_valid_out,
 	pe_switch_out
@@ -26,6 +27,7 @@ module pe (
 	input wire pe_enabled;
 	output reg signed [15:0] pe_psum_out;
 	output reg signed [15:0] pe_weight_out;
+	output reg pe_accept_w_out;
 	output reg signed [15:0] pe_input_out;
 	output reg pe_valid_out;
 	output reg pe_switch_out;
@@ -54,13 +56,17 @@ module pe (
 			pe_switch_out <= 0;
 			pe_psum_out <= 16'b0000000000000000;
 			weight_reg_active = 16'b0000000000000000;
+			pe_accept_w_out <= 0;
 		end
 		else begin
 			pe_valid_out <= pe_valid_in;
 			pe_switch_out <= pe_switch_in;
 			pe_psum_out <= mac_out;
-			if (pe_switch_in)
+			pe_accept_w_out <= pe_accept_w_in;
+			if (pe_switch_in && !pe_accept_w_in)
 				weight_reg_active <= weight_reg_inactive;
+			else if (pe_switch_in && pe_accept_w_in)
+				weight_reg_active <= pe_weight_in;
 			if (pe_accept_w_in) begin
 				weight_reg_inactive <= pe_weight_in;
 				pe_weight_out <= pe_weight_in;
