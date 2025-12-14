@@ -103,8 +103,8 @@ module test_systolic_tb;
     vector16_t a_row1, a_row2;
     matrix16_t result;
 
-    bit update_cycle = 1;
-    bit automatic_values_sel = 1;
+    bit start = 0;
+    bit assertionFail = 0;
 
     initial begin
         extractColReverse(matW, w_col1_r, 0, 2);
@@ -129,23 +129,37 @@ module test_systolic_tb;
         `endif
     end
 
-    // always @(posedge clk) begin
-    //     if (automatic_values_sel) begin
-    //         sys_weight_in_11 = w_col1_r[(cycle_count) % 2];
-    //         sys_weight_in_12 = w_col2_r[(cycle_count + 1) % 2];
-    //         sys_data_in_11 = a_row1[(cycle_count + 1) % 2];
-    //         sys_data_in_21 = a_row2[(cycle_count + 2) % 2];
-    //     end else begin
-    //         sys_weight_in_11 = 'z;
-    //         sys_weight_in_12 = 'z;
-    //         sys_data_in_11 = 'z;
-    //         sys_data_in_21 = 'z;
-    //     end
-
-    //     if (update_cycle)
-    //         cycle_count = cycle_count + 1;
-
-    // end    
+    // W11
+    always @(posedge clk) begin
+        if (start) begin
+            #2;
+            if(cycle_count < M) begin
+                sys_weight_in_11 <= w_col1_r[(cycle_count) % M];
+                sys_accept_w_1 <= 1;
+            end else begin
+                sys_accept_w_1 <= 0;
+            end
+            if(cycle_count - 1 >= 0 && cycle_count - 1 < M) begin
+                sys_weight_in_12 <= w_col2_r[(cycle_count - 1) % M];
+                sys_data_in_11 <= a_row1[(cycle_count - 1) % M];
+                sys_accept_w_2 <= 1;
+                sys_start <= 1;
+                sys_switch_in <= 1;
+            end else begin
+                sys_accept_w_2 <= 0;
+                sys_start <= 0;
+                sys_switch_in <= 0;
+            end 
+            if(cycle_count - 2 >= 0 && cycle_count - 2 < M) begin
+                sys_data_in_21 <= a_row2[(cycle_count - 2) % M];
+            end
+        // end else begin
+        //     sys_weight_in_11 <= 'z;
+        //     sys_weight_in_12 <= 'z;
+        //     sys_data_in_11 <= 'z;
+        //     sys_data_in_21 <= 'z;
+        end
+    end
 
     // function automatic int getIndex(input int offset) 
     // begin
@@ -197,62 +211,67 @@ module test_systolic_tb;
         // Enable all columns
         ub_rd_col_size_in = 2;
         ub_rd_col_size_valid_in = 1;
+        // Start generating values
+        start = 1;
         @(posedge clk);
         #1;
 
-
-        testN = 1;
         cycle_count = 0;
-        // Load last weight in the first column of W
-        sys_accept_w_1 = 1;
-        sys_weight_in_11 = w_col1_r[cycle_count];
+        repeat (1 + 2*M + 1) begin
+            @(posedge clk);
+            #1;
+            cycle_count <= cycle_count + 1;
+        end
+        // // Load last weight in the first column of W
+        // sys_accept_w_1 = 1;
+        // sys_weight_in_11 = w_col1_r[cycle_count];
                 
-        @(posedge clk);
-        #1;
-        // Load last weight in the first column of W
-        cycle_count = cycle_count + 1;
-        sys_weight_in_11 = w_col1_r[cycle_count];
-        sys_switch_in = 1;
-        // Load last weight in the second column of W
-        sys_weight_in_12 = w_col2_r[cycle_count - 1];
-        sys_accept_w_2 = 1;
-        // Load first activation in the first column of A
-        sys_data_in_11 = a_row1[cycle_count - 1];
-        // Enable switching after first load
-        sys_start = 1;
+        // @(posedge clk);
+        // #1;
+        // // Load last weight in the first column of W
+        // cycle_count = cycle_count + 1;
+        // sys_weight_in_11 = w_col1_r[cycle_count];
+        // sys_switch_in = 1;
+        // // Load last weight in the second column of W
+        // sys_weight_in_12 = w_col2_r[cycle_count - 1];
+        // sys_accept_w_2 = 1;
+        // // Load first activation in the first column of A
+        // sys_data_in_11 = a_row1[cycle_count - 1];
+        // // Enable switching after first load
+        // sys_start = 1;
 
-        @(posedge clk);
-        #1;
-        cycle_count = cycle_count + 1;
-        // First column weights should be loaded now
-        sys_accept_w_1 = 0;
-        // Load first weight in the second column of W
-        sys_weight_in_12 = w_col2_r[cycle_count - 1];
-        // Load second activation in the first column of A
-        sys_data_in_11 = a_row1[cycle_count - 1];
-        // Load first activation in the second column of A
-        sys_data_in_21 = a_row2[cycle_count - 2];
-        #1;
+        // @(posedge clk);
+        // #1;
+        // cycle_count = cycle_count + 1;
+        // // First column weights should be loaded now
+        // sys_accept_w_1 = 0;
+        // // Load first weight in the second column of W
+        // sys_weight_in_12 = w_col2_r[cycle_count - 1];
+        // // Load second activation in the first column of A
+        // sys_data_in_11 = a_row1[cycle_count - 1];
+        // // Load first activation in the second column of A
+        // sys_data_in_21 = a_row2[cycle_count - 2];
+        // #1;
 
-        @(posedge clk);
-        #1;
-        cycle_count = cycle_count + 1;
-        sys_start = 0;
-        sys_accept_w_2 = 0;
-        sys_switch_in = 0;
-        sys_data_in_21 = a_row2[cycle_count - 2];
+        // @(posedge clk);
+        // #1;
+        // cycle_count = cycle_count + 1;
+        // sys_start = 0;
+        // sys_accept_w_2 = 0;
+        // sys_switch_in = 0;
+        // sys_data_in_21 = a_row2[cycle_count - 2];
         
-        @(posedge clk);
-        #1; 
-        cycle_count = cycle_count + 1;
+        // @(posedge clk);
+        // #1; 
+        // cycle_count = cycle_count + 1;
 
-        @(posedge clk);
-        #1; 
-        cycle_count = cycle_count + 1;
+        // @(posedge clk);
+        // #1; 
+        // cycle_count = cycle_count + 1;
 
-        @(posedge clk);
-        #1; 
-        cycle_count = cycle_count + 1;
+        // @(posedge clk);
+        // #1; 
+        // cycle_count = cycle_count + 1;
 
         repeat (2) @(posedge clk);
 
@@ -260,57 +279,70 @@ module test_systolic_tb;
         $finish;
     end
 
-    always @(dut.pe11.pe_psum_out, rst) begin
+    always @(rst, cycle_count) begin
         if(rst != 1) begin
-            if(cycle_count >= 2 && cycle_count < 2 + M) begin
-                assert (dut.pe11.pe_psum_out == fixedMAC(matA[cycle_count - 2][0], matW[0][0], 0))
+            if(cycle_count > 2 && cycle_count < 2 + M) begin
+                assert (dut.pe11.pe_psum_out == fixedMAC(matA[cycle_count - 3][0], matW[0][0], 0))
                     else begin
-                        $error("Assertion FAILED: pe11.pe_psum_out was %f, expected: %f, @cycle_count: %0d", from_fixed(dut.pe11.pe_psum_out), from_fixed(fixedMAC(matA[cycle_count - 2][0], matW[0][0], 0)), cycle_count);
+                        $error("Assertion FAILED: pe11.pe_psum_out was %f, expected: %f, @cycle_count: %0d", from_fixed(dut.pe11.pe_psum_out), from_fixed(fixedMAC(matA[cycle_count - 3][0], matW[0][0], 0)), cycle_count);
+                        assertionFail = 1;
+                        @(posedge clk);
                         $finish;
                     end
             end
         end
     end
 
-    always @(dut.pe12.pe_psum_out, rst) begin
+    always @(rst, cycle_count) begin
         if(rst != 1) begin
-            if(cycle_count >= 3 && cycle_count < 3 + M) begin
-                assert (dut.pe12.pe_psum_out == fixedMAC(matA[cycle_count - 3][0], matW[0][1], 0))
+            if(cycle_count > 3 && cycle_count < 3 + M) begin
+                assert (dut.pe12.pe_psum_out == fixedMAC(matA[cycle_count - 4][0], matW[0][1], 0))
                     else begin 
-                        $error("Assertion FAILED: pe12.pe_psum_out was %f, expected: %f, @cycle_count: %0d", from_fixed(dut.pe12.pe_psum_out), from_fixed(fixedMAC(matA[cycle_count - 3][0], matW[0][1], 0)), cycle_count);
+                        $error("Assertion FAILED: pe12.pe_psum_out was %f, expected: %f, @cycle_count: %0d", from_fixed(dut.pe12.pe_psum_out), from_fixed(fixedMAC(matA[cycle_count - 4][0], matW[0][1], 0)), cycle_count);
+                        assertionFail = 1;
+                        @(posedge clk);
                         $finish;
                     end
             end
         end
     end
 
-    always @(dut.pe21.mult.out, rst) begin
+    always @(rst, cycle_count) begin
         if(rst != 1) begin
-            if(cycle_count >= 4 && cycle_count < 4 + M) begin
-                assert (dut.pe21.mult.out == fixedMAC(matA[cycle_count - 4][1], matW[0][0], 0))
+            if(cycle_count > 4 && cycle_count < 4 + M) begin
+                assert (dut.pe21.mult.out == fixedMAC(matA[cycle_count - 4][1], matW[1][0], 0))
                     else begin 
-                        $error("Assertion FAILED: pe21.mult.out was %f, expected: %f, @cycle_count: %0d", from_fixed(dut.pe21.mult.out), from_fixed(fixedMAC(matA[cycle_count - 4][1], matW[0][0], 0)), cycle_count);
+                        $error("Assertion FAILED: pe21.mult.out was %f, expected: %f, @cycle_count: %0d", from_fixed(dut.pe21.mult.out), from_fixed(fixedMAC(matA[cycle_count - 4][1], matW[1][0], 0)), cycle_count);
+                        assertionFail = 1;
+                        @(posedge clk);
                         $finish;
                     end
                 assert (dut.sys_data_out_x1 == result[cycle_count - 4][0])
                     else begin 
                         $error("Assertion FAILED: dut.sys_data_out_x1 was %f, expected: %f, @cycle_count: %0d", from_fixed(dut.sys_data_out_x1), from_fixed(result[cycle_count - 4][0]), cycle_count);
+                        assertionFail = 1;
+                        @(posedge clk);
                         $finish;
                     end
             end
         end
     end
 
-    always @(dut.pe22.mult.out, rst) begin
+    always @(rst, cycle_count) begin
         if(rst != 1) begin
-            if(cycle_count >= 5 && cycle_count < 5 + M) begin
-                assert (dut.pe22.mult.out == fixedMAC(matA[cycle_count - 5][1], matW[0][1], 0))
+            if(cycle_count > 5 && cycle_count < 5 + M) begin
+                assert (dut.pe22.mult.out == fixedMAC(matA[cycle_count - 5][1], matW[1][1], 0))
                     else begin
                         $error("Assertion FAILED: pe22.mult.out was %f, expected: %f, @cycle_count: %0d", from_fixed(dut.pe12.pe_psum_out), from_fixed(fixedMAC(matA[cycle_count - 5][1], matW[0][1], 0)), cycle_count);
+                        assertionFail = 1;
+                        @(posedge clk);
+                        $finish;
                     end
-                assert (dut.sys_data_out_x2 == result[cycle_count - 4][1])
+                assert (dut.sys_data_out_x2 == result[cycle_count - 5][1])
                     else begin 
-                        $error("Assertion FAILED: dut.sys_data_out_x1 was %f, expected: %f, @cycle_count: %0d", from_fixed(dut.sys_data_out_x2), from_fixed(result[cycle_count - 4][1]), cycle_count);
+                        $error("Assertion FAILED: dut.sys_data_out_x1 was %f, expected: %f, @cycle_count: %0d", from_fixed(dut.sys_data_out_x2), from_fixed(result[cycle_count - 5][1]), cycle_count);
+                        assertionFail = 1;
+                        @(posedge clk);
                         $finish;
                     end
             end
