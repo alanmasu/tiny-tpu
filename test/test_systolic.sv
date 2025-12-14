@@ -220,22 +220,7 @@ module test_systolic_tb;
         sys_data_in_11 = a_row1[cycle_count - 1];
         // Enable switching after first load
         sys_start = 1;
-        #1;
-        validating = 1;
-        // if (dut.pe11.weight_reg_inactive == w_col1_r[cycle_count - 1]) begin
-        //     $display("Test #%0da: OK", testN);
-        // end else begin
-        //     $display("Test #%0da: FAILED - pe11.weight_reg_inactive was %f, expected %f", testN, from_fixed(dut.pe11.weight_reg_inactive), from_fixed(w_col1_r[cycle_count - 1]));
-        // end
-        // if (dut.pe11.weight_reg_active == to_fixed(0.0)) begin
-        //     $display("Test #%0db: OK", testN);
-        // end else begin
-        //     $display("Test #%0db: FAILED - pe11.weight_reg_active was %f, expected %f", testN, from_fixed(dut.pe11.weight_reg_active), 0.0);
-        // end
-        #1;
-        validating = 0;
 
-        testN = 2;
         @(posedge clk);
         #1;
         cycle_count = cycle_count + 1;
@@ -248,33 +233,7 @@ module test_systolic_tb;
         // Load first activation in the second column of A
         sys_data_in_21 = a_row2[cycle_count - 2];
         #1;
-        validating = 1;
-        // PE 11 checks
-        // if (dut.pe11.weight_reg_inactive == w_col1_r[cycle_count - 1]) begin
-        //     $display("Test #%0da: OK", testN);
-        // end else begin
-        //     $display("Test #%0da: FAILED - pe11.weight_reg_inactive was %f, expected %f", testN, from_fixed(dut.pe11.weight_reg_inactive), from_fixed(w_col1_r[cycle_count - 1]));
-        // end
-        // if (dut.pe11.weight_reg_active == w_col1_r[cycle_count - 2]) begin
-        //     $display("Test #%0db: OK", testN);
-        // end else begin
-        //     $display("Test #%0db: FAILED - pe11.weight_reg_active was %f, expected %f", testN, from_fixed(dut.pe11.weight_reg_active), from_fixed(w_col1_r[cycle_count - 2]));
-        // end
-        // if (dut.pe11.pe_psum_out == to_fixed(0.0)) begin
-        //     $display("Test #%0dc: OK", testN);
-        // end else begin
-        //     $display("Test #%0dc: FAILED - pe11.pe_psum_out was %f, expected %f", testN, from_fixed(dut.pe11.pe_psum_out), to_fixed(0.0));
-        // end
-        // if (dut.pe11.pe_input_out == a_row1[cycle_count - 2]) begin
-        //     $display("Test #%0dd: OK", testN);
-        // end else begin
-        //     $display("Test #%0dc: FAILED - pe11.pe_input_out was %f, expected %f", testN, from_fixed(dut.pe11.pe_input_out), to_fixed(1.0));
-        // end
 
-        #1;
-        validating = 0;
-
-        testN = 3;
         @(posedge clk);
         #1;
         cycle_count = cycle_count + 1;
@@ -285,46 +244,16 @@ module test_systolic_tb;
         
         @(posedge clk);
         #1; 
-        validating = 1;
         cycle_count = cycle_count + 1;
-        if(sys_data_out_x1 == result[0][0]) begin
-            $display("Test #%0d: OK", testN);
-        end else begin
-            $display("Test #%0d: FAILED -> sys_data_out_x1 was: %f, expected: %f", testN, from_fixed(sys_data_out_x1), from_fixed(result[0][0]));
-        end
-        #1;
-        validating = 0;
 
-        testN = 4;
         @(posedge clk);
         #1; 
-        validating = 1;
-        if(sys_data_out_x1 == result[1][0]) begin
-            $display("Test #%0da: OK", testN);
-        end else begin
-            $display("Test #%0da: FAILED -> sys_data_out_x1 was: %f, expected: %f", testN, from_fixed(sys_data_out_x1), from_fixed(result[1][0]));
-        end
-        if(sys_data_out_x2 == result[0][1]) begin
-            $display("Test #%0db: OK", testN);
-        end else begin
-            $display("Test #%0db: FAILED -> sys_data_out_x2 was: %f, expected: %f", testN, from_fixed(sys_data_out_x2), from_fixed(result[0][1]));
-        end
-        #1;
-        validating = 0;
+        cycle_count = cycle_count + 1;
 
-        testN = 5;
         @(posedge clk);
         #1; 
-        validating = 1;
-        if(sys_data_out_x2 == result[1][1]) begin
-            $display("Test #%0d: OK", testN);
-        end else begin
-            $display("Test #%0d: FAILED -> sys_data_out_x2 was: %f, expected: %f", testN, from_fixed(sys_data_out_x2), from_fixed(result[1][1]));
-        end
-        #1;
-        validating = 0;
-        
-        testN = 6;
+        cycle_count = cycle_count + 1;
+
         repeat (2) @(posedge clk);
 
         $display("Test completed.");
@@ -376,8 +305,14 @@ module test_systolic_tb;
         if(rst != 1) begin
             if(cycle_count >= 5 && cycle_count < 5 + M) begin
                 assert (dut.pe22.mult.out == fixedMAC(matA[cycle_count - 5][1], matW[0][1], 0))
-                    else $error("Assertion FAILED: pe22.mult.out was %f, expected: %f, @cycle_count: %0d", from_fixed(dut.pe12.pe_psum_out), from_fixed(fixedMAC(matA[cycle_count - 5][1], matW[0][1], 0)), cycle_count);
-            
+                    else begin
+                        $error("Assertion FAILED: pe22.mult.out was %f, expected: %f, @cycle_count: %0d", from_fixed(dut.pe12.pe_psum_out), from_fixed(fixedMAC(matA[cycle_count - 5][1], matW[0][1], 0)), cycle_count);
+                    end
+                assert (dut.sys_data_out_x2 == result[cycle_count - 4][1])
+                    else begin 
+                        $error("Assertion FAILED: dut.sys_data_out_x1 was %f, expected: %f, @cycle_count: %0d", from_fixed(dut.sys_data_out_x2), from_fixed(result[cycle_count - 4][1]), cycle_count);
+                        $finish;
+                    end
             end
         end
     end
