@@ -31,24 +31,24 @@ module systolic #(
 );
     //West to East
     // input_out for each PE (left to right)
-    logic [15:0] pe_input_out_11;   // pe11 out to pe12 in
-    logic [15:0] pe_input_out_21;   // pe21 out to pe22 in
+    wire [15:0] pe_input_out_11;   // pe11 out to pe12 in
+    wire [15:0] pe_input_out_21;   // pe21 out to pe22 in
     wire pe_valid_out_11;   // pe11 out to pe12 in
     wire pe_valid_out_21;   // pe21 out to pe22 in
 
     // psum_out for each PE (top to bottom)
-    logic [15:0] pe_psum_out_11;    // pe11 out to pe21 in
-    logic [15:0] pe_psum_out_12;    // pe12 out to pe22 in
-    logic [15:0] pe_weight_out_11;  // pe11 out to pe21 in
-    logic [15:0] pe_weight_out_12;  // pe12 out to pe22 in
-    logic pe_accept_w_out_11;      // pe11 out to pe21 in
-    logic pe_accept_w_out_12;      // pe12 out to pe22 in
+    wire [15:0] pe_psum_out_11;    // pe11 out to pe21 in
+    wire [15:0] pe_psum_out_12;    // pe12 out to pe22 in
+    wire [15:0] pe_weight_out_11;  // pe11 out to pe21 in
+    wire [15:0] pe_weight_out_12;  // pe12 out to pe22 in
+    wire pe_accept_w_out_11;      // pe11 out to pe21 in
+    wire pe_accept_w_out_12;      // pe12 out to pe22 in
 
     
 
     // switch_out for each PE
-    logic pe_switch_out_11;  // pe11 out to pe12 in
-    logic pe_switch_out_21;  // pe21 out to pe22 in
+    wire pe_switch_out_11;  // pe11 out to pe12 in
+    wire pe_switch_out_21;  // pe21 out to pe22 in
     
 
     // PE columns to enable
@@ -120,7 +120,7 @@ module systolic #(
         // North wires of PE
         .pe_psum_in(pe_psum_out_11),
         .pe_weight_in(pe_weight_out_11),
-        .pe_accept_w_in(pe_accept_w_out_11),
+        .pe_accept_w_in(sys_accept_w_1),
 
         // West wires of PE
         .pe_input_in(sys_data_in_2x),
@@ -147,7 +147,7 @@ module systolic #(
         // North wires of PE
         .pe_psum_in(pe_psum_out_12),
         .pe_weight_in(pe_weight_out_12),
-        .pe_accept_w_in(pe_accept_w_out_12),
+        .pe_accept_w_in(sys_accept_w_2),
 
         // West wires of PE
         .pe_input_in(pe_input_out_21),
