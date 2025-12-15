@@ -31,11 +31,16 @@ module test_systolic_tb;
     wire sys_valid_out_21;
     wire sys_valid_out_22;
 
-    int M = 2, N = 2, K = 2;
+    int M = 4, N = 2, K = 2;
+    // int M = 2, N = 2, K = 2;
 
     // Matrices for testing
-    matrix16_t matA = '{'{to_fixed(1.0), to_fixed(2.0)},
-                        '{to_fixed(5.0), to_fixed(6.0)}};
+    matrix16_t matA = '{'{to_fixed(1.80078125), to_fixed(2.0)},
+                        '{to_fixed(5.48046875), to_fixed(6.0)},
+                        '{to_fixed(-15.6796875), to_fixed(-18.859375)},
+                        '{to_fixed(7.359375), to_fixed(3.26171875)}};
+    // matrix16_t matA = '{'{to_fixed(1.0), to_fixed(2.0)},
+    //                     '{to_fixed(5.0), to_fixed(6.0)}};
 
     matrix16_t matW = '{'{to_fixed(1.0), to_fixed(4.34765625)},
                         '{to_fixed(5.75), to_fixed(1.0)}};
@@ -102,30 +107,31 @@ module test_systolic_tb;
     vector16_t w_col1_r, w_col2_r;
     vector16_t a_row1, a_row2;
     matrix16_t result;
+    matrix16_t systolic_output;
 
     bit start = 0;
     bit assertionFail = 0;
 
     initial begin
-        extractColReverse(matW, w_col1_r, 0, 2);
+        extractColReverse(matW, w_col1_r, 0, N);
         `ifdef DEBUG
             $display("w_col1_r:");
-            printVec(w_col1_r, 4);
+            printVec(w_col1_r, N);
         `endif
-        extractColReverse(matW, w_col2_r, 1, 2);
+        extractColReverse(matW, w_col2_r, 1, N);
         `ifdef DEBUG
             $display("w_col2_r:");
-            printVec(w_col2_r, 4);
+            printVec(w_col2_r, N);
         `endif
-        extractCol(matA, a_row1, 0, 2);
+        extractCol(matA, a_row1, 0, M);
         `ifdef DEBUG
             $display("a_row1:");
-            printVec(a_row1, 2);
+            printVec(a_row1, M);
         `endif
-        extractCol(matA, a_row2, 1, 2);
+        extractCol(matA, a_row2, 1, M);
         `ifdef DEBUG
             $display("a_row2:");
-            printVec(a_row2, 2);
+            printVec(a_row2, M);
         `endif
     end
 
@@ -133,22 +139,25 @@ module test_systolic_tb;
     always @(posedge clk) begin
         if (start) begin
             #2;
-            if(cycle_count < M) begin
-                sys_weight_in_11 <= w_col1_r[(cycle_count) % M];
+            if(cycle_count < N) begin
+                sys_weight_in_11 <= w_col1_r[(cycle_count) % N];
                 sys_accept_w_1 <= 1;
             end else begin
                 sys_accept_w_1 <= 0;
             end
-            if(cycle_count - 1 >= 0 && cycle_count - 1 < M) begin
-                sys_weight_in_12 <= w_col2_r[(cycle_count - 1) % M];
-                sys_data_in_11 <= a_row1[(cycle_count - 1) % M];
+            if(cycle_count - 1 >= 0 && cycle_count - 1 < N) begin
+                sys_weight_in_12 <= w_col2_r[(cycle_count - 1) % N];
                 sys_accept_w_2 <= 1;
-                sys_start <= 1;
                 sys_switch_in <= 1;
             end else begin
                 sys_accept_w_2 <= 0;
-                sys_start <= 0;
                 sys_switch_in <= 0;
+            end 
+            if(cycle_count - 1 >= 0 && cycle_count - 1 < M) begin
+                sys_data_in_11 <= a_row1[(cycle_count - 1) % M];
+                sys_start <= 1;
+            end else begin
+                sys_start <= 0;
             end 
             if(cycle_count - 2 >= 0 && cycle_count - 2 < M) begin
                 sys_data_in_21 <= a_row2[(cycle_count - 2) % M];
@@ -171,8 +180,9 @@ module test_systolic_tb;
     bit b;
     initial begin
         vector16_t col_vec;
+        allocMat(systolic_output, M, K);
         // //Disabled test for matMult cause we don't have an identity matrix starting by now
-        matMult(matA, matW, result, 2, 2, 2);
+        matMult(matA, matW, result, 4, 2, 2);
         
         extractCol(matA, col_vec, 1, 2);
         b = 1;
@@ -275,78 +285,104 @@ module test_systolic_tb;
 
         repeat (2) @(posedge clk);
 
+        b = checkMatEqual(systolic_output, result, M, K);
+        assert (b == 1)
+            else begin
+                $error("Assertion FAILED: systolic_output differ from expected result");
+                $display("systolic_output was:");
+                printMat(systolic_output, M, K);
+                $display("expected:");
+                printMat(result, M, K);
+                $finish;
+            end
         $display("Test completed.");
         $finish;
     end
 
-    always @(rst, cycle_count) begin
-        if(rst != 1) begin
-            if(cycle_count > 2 && cycle_count < 2 + M) begin
-                assert (dut.pe11.pe_psum_out == fixedMAC(matA[cycle_count - 3][0], matW[0][0], 0))
-                    else begin
-                        $error("Assertion FAILED: pe11.pe_psum_out was %f, expected: %f, @cycle_count: %0d", from_fixed(dut.pe11.pe_psum_out), from_fixed(fixedMAC(matA[cycle_count - 3][0], matW[0][0], 0)), cycle_count);
-                        assertionFail = 1;
-                        @(posedge clk);
-                        $finish;
-                    end
-            end
+    int row1 = 0;
+    always @(sys_data_out_x1) begin
+        if(cycle_count >= 1 + N && row1 < M)  begin
+            systolic_output[row1][0] = sys_data_out_x1;
+            row1++;
         end
     end
 
-    always @(rst, cycle_count) begin
-        if(rst != 1) begin
-            if(cycle_count > 3 && cycle_count < 3 + M) begin
-                assert (dut.pe12.pe_psum_out == fixedMAC(matA[cycle_count - 4][0], matW[0][1], 0))
-                    else begin 
-                        $error("Assertion FAILED: pe12.pe_psum_out was %f, expected: %f, @cycle_count: %0d", from_fixed(dut.pe12.pe_psum_out), from_fixed(fixedMAC(matA[cycle_count - 4][0], matW[0][1], 0)), cycle_count);
-                        assertionFail = 1;
-                        @(posedge clk);
-                        $finish;
-                    end
-            end
+    int row2 = 0;
+    always @(sys_data_out_x2) begin
+        if(cycle_count >= 1 + N && row2 < M)  begin
+            systolic_output[row2][1] = sys_data_out_x2;
+            row2++;
         end
     end
 
-    always @(rst, cycle_count) begin
-        if(rst != 1) begin
-            if(cycle_count > 4 && cycle_count < 4 + M) begin
-                assert (dut.pe21.mult.out == fixedMAC(matA[cycle_count - 4][1], matW[1][0], 0))
-                    else begin 
-                        $error("Assertion FAILED: pe21.mult.out was %f, expected: %f, @cycle_count: %0d", from_fixed(dut.pe21.mult.out), from_fixed(fixedMAC(matA[cycle_count - 4][1], matW[1][0], 0)), cycle_count);
-                        assertionFail = 1;
-                        @(posedge clk);
-                        $finish;
-                    end
-                assert (dut.sys_data_out_x1 == result[cycle_count - 4][0])
-                    else begin 
-                        $error("Assertion FAILED: dut.sys_data_out_x1 was %f, expected: %f, @cycle_count: %0d", from_fixed(dut.sys_data_out_x1), from_fixed(result[cycle_count - 4][0]), cycle_count);
-                        assertionFail = 1;
-                        @(posedge clk);
-                        $finish;
-                    end
-            end
-        end
-    end
+    // always @(rst, cycle_count) begin
+    //     if(rst != 1) begin
+    //         if(cycle_count > 2 && cycle_count < 2 + M) begin
+    //             assert (dut.pe11.pe_psum_out == fixedMAC(matA[cycle_count - 3][0], matW[0][0], 0))
+    //                 else begin
+    //                     $error("Assertion FAILED: pe11.pe_psum_out was %f, expected: %f, @cycle_count: %0d", from_fixed(dut.pe11.pe_psum_out), from_fixed(fixedMAC(matA[cycle_count - 3][0], matW[0][0], 0)), cycle_count);
+    //                     assertionFail = 1;
+    //                     @(posedge clk);
+    //                     $finish;
+    //                 end
+    //         end
+    //     end
+    // end
 
-    always @(rst, cycle_count) begin
-        if(rst != 1) begin
-            if(cycle_count > 5 && cycle_count < 5 + M) begin
-                assert (dut.pe22.mult.out == fixedMAC(matA[cycle_count - 5][1], matW[1][1], 0))
-                    else begin
-                        $error("Assertion FAILED: pe22.mult.out was %f, expected: %f, @cycle_count: %0d", from_fixed(dut.pe12.pe_psum_out), from_fixed(fixedMAC(matA[cycle_count - 5][1], matW[0][1], 0)), cycle_count);
-                        assertionFail = 1;
-                        @(posedge clk);
-                        $finish;
-                    end
-                assert (dut.sys_data_out_x2 == result[cycle_count - 5][1])
-                    else begin 
-                        $error("Assertion FAILED: dut.sys_data_out_x1 was %f, expected: %f, @cycle_count: %0d", from_fixed(dut.sys_data_out_x2), from_fixed(result[cycle_count - 5][1]), cycle_count);
-                        assertionFail = 1;
-                        @(posedge clk);
-                        $finish;
-                    end
-            end
-        end
-    end
+    // always @(rst, cycle_count) begin
+    //     if(rst != 1) begin
+    //         if(cycle_count > 3 && cycle_count < 3 + M) begin
+    //             assert (dut.pe12.pe_psum_out == fixedMAC(matA[cycle_count - 4][0], matW[0][1], 0))
+    //                 else begin 
+    //                     $error("Assertion FAILED: pe12.pe_psum_out was %f, expected: %f, @cycle_count: %0d", from_fixed(dut.pe12.pe_psum_out), from_fixed(fixedMAC(matA[cycle_count - 4][0], matW[0][1], 0)), cycle_count);
+    //                     assertionFail = 1;
+    //                     @(posedge clk);
+    //                     $finish;
+    //                 end
+    //         end
+    //     end
+    // end
+
+    // always @(rst, cycle_count) begin
+    //     if(rst != 1) begin
+    //         if(cycle_count > 4 && cycle_count < 4 + M) begin
+    //             assert (dut.pe21.mult.out == fixedMAC(matA[cycle_count - 4][1], matW[1][0], 0))
+    //                 else begin 
+    //                     $error("Assertion FAILED: pe21.mult.out was %f, expected: %f, @cycle_count: %0d", from_fixed(dut.pe21.mult.out), from_fixed(fixedMAC(matA[cycle_count - 4][1], matW[1][0], 0)), cycle_count);
+    //                     assertionFail = 1;
+    //                     @(posedge clk);
+    //                     $finish;
+    //                 end
+    //             assert (dut.sys_data_out_x1 == result[cycle_count - 4][0])
+    //                 else begin 
+    //                     $error("Assertion FAILED: dut.sys_data_out_x1 was %f, expected: %f, @cycle_count: %0d", from_fixed(dut.sys_data_out_x1), from_fixed(result[cycle_count - 4][0]), cycle_count);
+    //                     assertionFail = 1;
+    //                     @(posedge clk);
+    //                     $finish;
+    //                 end
+    //         end
+    //     end
+    // end
+
+    // always @(rst, cycle_count) begin
+    //     if(rst != 1) begin
+    //         if(cycle_count > 5 && cycle_count < 5 + M) begin
+    //             assert (dut.pe22.mult.out == fixedMAC(matA[cycle_count - 5][1], matW[1][1], 0))
+    //                 else begin
+    //                     $error("Assertion FAILED: pe22.mult.out was %f, expected: %f, @cycle_count: %0d", from_fixed(dut.pe12.pe_psum_out), from_fixed(fixedMAC(matA[cycle_count - 5][1], matW[0][1], 0)), cycle_count);
+    //                     assertionFail = 1;
+    //                     @(posedge clk);
+    //                     $finish;
+    //                 end
+    //             assert (dut.sys_data_out_x2 == result[cycle_count - 5][1])
+    //                 else begin 
+    //                     $error("Assertion FAILED: dut.sys_data_out_x1 was %f, expected: %f, @cycle_count: %0d", from_fixed(dut.sys_data_out_x2), from_fixed(result[cycle_count - 5][1]), cycle_count);
+    //                     assertionFail = 1;
+    //                     @(posedge clk);
+    //                     $finish;
+    //                 end
+    //         end
+    //     end
+    // end
 
 endmodule

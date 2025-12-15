@@ -1,6 +1,6 @@
 package test_utils_pkg;
 
-    typedef bit[15:0] fixed16_t;
+    typedef bit signed[15:0] fixed16_t;
     typedef fixed16_t matrix16_t [][];
     typedef fixed16_t vector16_t [];
 
@@ -32,7 +32,7 @@ package test_utils_pkg;
     function automatic void printMat(ref matrix16_t input_matrix, input int rows, input int cols);
         for (int i = 0; i < rows; i++) begin
             for (int j = 0; j < cols; j++) begin
-                $write("%0.2f ", from_fixed(input_matrix[i][j]));
+                $write("%0.8f ", from_fixed(input_matrix[i][j]));
             end
             $write("\n");
         end
@@ -54,16 +54,18 @@ package test_utils_pkg;
         for (int i = 0; i < M; i++) begin
             for (int j = 0; j < K; j++) begin
                 bit signed [15:0] acc_result = 16'b0;
+                bit signed [15:0] mult_16 = 16'b0;
                 C[i][j] = 16'b0;
                 // $display("Calculating C[%0d][%0d]\n\t", i, j);
                 for (int k = 0; k < N; k++) begin
                     // Fixed-point multiplication and accumulation
                     bit signed [31:0] mult_result;
-                    // mult_result = $signed(A[i][k]) * $signed(B[k][j]);
-                    mult_result = (A[i][k]) * (B[k][j]);
+                    mult_result = $signed(A[i][k]) * $signed(B[k][j]);
+                    // mult_result = (A[i][k]) * (B[k][j]);
                     // Adjust for fixed-point (frac=8)
-                    mult_result = mult_result >>> 8;
-                    acc_result = acc_result + mult_result[15:0];
+                    // mult_16 = mult_result >>> 8;
+                    mult_16 = mult_result[23:8];
+                    acc_result = acc_result + mult_16;
                     // $write("(%0.1f, %0.1f)", from_fixed(mult_result[15:0]), from_fixed(acc_result));
 
                 end
