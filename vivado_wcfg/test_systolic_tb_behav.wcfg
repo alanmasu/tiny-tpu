@@ -12,15 +12,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
-      <ZoomEndTime time="100.001 ns"></ZoomEndTime>
-      <Cursor1Time time="100.000 ns"></Cursor1Time>
+      <ZoomStartTime time="17.416 ns"></ZoomStartTime>
+      <ZoomEndTime time="92.517 ns"></ZoomEndTime>
+      <Cursor1Time time="65.416 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="276"></NameColumnWidth>
-      <ValueColumnWidth column_width="100"></ValueColumnWidth>
+      <ValueColumnWidth column_width="96"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="25" />
+   <WVObjectSize size="27" />
    <wave_markers>
       <marker label="" time="29987" />
       <marker label="" time="60000" />
@@ -46,6 +46,16 @@
       <obj_property name="ElementShortName">validating</obj_property>
       <obj_property name="ObjectShortName">validating</obj_property>
       <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/test_systolic_tb/start">
+      <obj_property name="ElementShortName">start</obj_property>
+      <obj_property name="ObjectShortName">start</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/test_systolic_tb/assertionFail">
+      <obj_property name="ElementShortName">assertionFail</obj_property>
+      <obj_property name="ObjectShortName">assertionFail</obj_property>
+      <obj_property name="CustomSignalColor">#FF0000</obj_property>
       <obj_property name="UseCustomSignalColor">true</obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/test_systolic_tb/cycle_count">
