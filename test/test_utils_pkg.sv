@@ -60,11 +60,14 @@ package test_utils_pkg;
                 for (int k = 0; k < N; k++) begin
                     // Fixed-point multiplication and accumulation
                     bit signed [31:0] mult_result;
+                    bit signed [31:0] mult_result_rounded;
                     mult_result = $signed(A[i][k]) * $signed(B[k][j]);
+                    mult_result_rounded = mult_result + 32'h00000080;
                     // mult_result = (A[i][k]) * (B[k][j]);
                     // Adjust for fixed-point (frac=8)
                     // mult_16 = mult_result >>> 8;
-                    mult_16 = mult_result[23:8];
+                    
+                    mult_16 = mult_result_rounded[23:8];
                     acc_result = acc_result + mult_16;
                     // $write("(%0.1f, %0.1f)", from_fixed(mult_result[15:0]), from_fixed(acc_result));
 
