@@ -12,17 +12,18 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
-      <ZoomEndTime time="100.001 ns"></ZoomEndTime>
-      <Cursor1Time time="55.384 ns"></Cursor1Time>
+      <ZoomStartTime time="17.416 ns"></ZoomStartTime>
+      <ZoomEndTime time="92.517 ns"></ZoomEndTime>
+      <Cursor1Time time="65.416 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="276"></NameColumnWidth>
-      <ValueColumnWidth column_width="112"></ValueColumnWidth>
+      <ValueColumnWidth column_width="96"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="25" />
+   <WVObjectSize size="27" />
    <wave_markers>
-      <marker label="" time="49937" />
+      <marker label="" time="29987" />
+      <marker label="" time="60000" />
    </wave_markers>
    <wvobject type="logic" fp_name="/test_systolic_tb/clk">
       <obj_property name="ElementShortName">clk</obj_property>
@@ -45,6 +46,16 @@
       <obj_property name="ElementShortName">validating</obj_property>
       <obj_property name="ObjectShortName">validating</obj_property>
       <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/test_systolic_tb/start">
+      <obj_property name="ElementShortName">start</obj_property>
+      <obj_property name="ObjectShortName">start</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/test_systolic_tb/assertionFail">
+      <obj_property name="ElementShortName">assertionFail</obj_property>
+      <obj_property name="ObjectShortName">assertionFail</obj_property>
+      <obj_property name="CustomSignalColor">#FF0000</obj_property>
       <obj_property name="UseCustomSignalColor">true</obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/test_systolic_tb/cycle_count">
@@ -240,6 +251,8 @@
          <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
          <obj_property name="radix_fractionWidth">8</obj_property>
          <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject type="logic" fp_name="/test_systolic_tb/dut/pe11/pe_switch_in">
          <obj_property name="ElementShortName">pe_switch_in</obj_property>
@@ -357,6 +370,7 @@
    <wvobject type="group" fp_name="group165">
       <obj_property name="label">PE21</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject type="logic" fp_name="/test_systolic_tb/dut/pe21/pe_enabled">
          <obj_property name="ElementShortName">pe_enabled</obj_property>
          <obj_property name="ObjectShortName">pe_enabled</obj_property>
@@ -380,6 +394,8 @@
          <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
          <obj_property name="radix_fractionWidth">8</obj_property>
          <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject type="logic" fp_name="/test_systolic_tb/dut/pe21/pe_accept_w_in">
          <obj_property name="ElementShortName">pe_accept_w_in</obj_property>
@@ -396,6 +412,8 @@
          <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
          <obj_property name="radix_fractionWidth">8</obj_property>
          <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject type="logic" fp_name="/test_systolic_tb/dut/pe21/pe_switch_in">
          <obj_property name="ElementShortName">pe_switch_in</obj_property>
@@ -413,9 +431,31 @@
          <obj_property name="label">Output + terms</obj_property>
          <obj_property name="DisplayName">label</obj_property>
       </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/dut/pe21/pe_input_in">
+         <obj_property name="ElementShortName">pe_input_in[15:0]</obj_property>
+         <obj_property name="ObjectShortName">pe_input_in[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/test_systolic_tb/dut/pe21/pe_valid_in">
+         <obj_property name="ElementShortName">pe_valid_in</obj_property>
+         <obj_property name="ObjectShortName">pe_valid_in</obj_property>
+      </wvobject>
       <wvobject type="array" fp_name="/test_systolic_tb/dut/pe21/pe_input_out">
          <obj_property name="ElementShortName">pe_input_out[15:0]</obj_property>
          <obj_property name="ObjectShortName">pe_input_out[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/dut/pe21/mult/out">
+         <obj_property name="ElementShortName">out[15:0]</obj_property>
+         <obj_property name="ObjectShortName">out[15:0]</obj_property>
+         <obj_property name="CustomSignalColor">#800000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="Radix">REALRADIX</obj_property>
          <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
          <obj_property name="radix_fractionWidth">8</obj_property>
@@ -436,6 +476,8 @@
          <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
          <obj_property name="radix_fractionWidth">8</obj_property>
          <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
    </wvobject>
    <wvobject type="group" fp_name="group180">
@@ -448,10 +490,18 @@
       <wvobject type="array" fp_name="/test_systolic_tb/dut/pe22/pe_psum_in">
          <obj_property name="ElementShortName">pe_psum_in[15:0]</obj_property>
          <obj_property name="ObjectShortName">pe_psum_in[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/test_systolic_tb/dut/pe22/pe_weight_in">
          <obj_property name="ElementShortName">pe_weight_in[15:0]</obj_property>
          <obj_property name="ObjectShortName">pe_weight_in[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
       </wvobject>
       <wvobject type="logic" fp_name="/test_systolic_tb/dut/pe22/pe_accept_w_in">
          <obj_property name="ElementShortName">pe_accept_w_in</obj_property>
@@ -468,10 +518,18 @@
       <wvobject type="array" fp_name="/test_systolic_tb/dut/pe22/weight_reg_active">
          <obj_property name="ElementShortName">weight_reg_active[15:0]</obj_property>
          <obj_property name="ObjectShortName">weight_reg_active[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/test_systolic_tb/dut/pe22/weight_reg_inactive">
          <obj_property name="ElementShortName">weight_reg_inactive[15:0]</obj_property>
          <obj_property name="ObjectShortName">weight_reg_inactive[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
       </wvobject>
       <wvobject fp_name="divider146" type="divider">
          <obj_property name="label">Output + terms</obj_property>
@@ -480,14 +538,36 @@
       <wvobject type="array" fp_name="/test_systolic_tb/dut/pe22/pe_input_out">
          <obj_property name="ElementShortName">pe_input_out[15:0]</obj_property>
          <obj_property name="ObjectShortName">pe_input_out[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/test_systolic_tb/dut/pe22/pe_psum_in">
          <obj_property name="ElementShortName">pe_psum_in[15:0]</obj_property>
          <obj_property name="ObjectShortName">pe_psum_in[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/test_systolic_tb/dut/pe22/mult/out">
+         <obj_property name="ElementShortName">out[15:0]</obj_property>
+         <obj_property name="ObjectShortName">out[15:0]</obj_property>
+         <obj_property name="CustomSignalColor">#800000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/test_systolic_tb/dut/pe22/pe_psum_out">
          <obj_property name="ElementShortName">pe_psum_out[15:0]</obj_property>
          <obj_property name="ObjectShortName">pe_psum_out[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>
