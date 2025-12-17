@@ -1,0 +1,36 @@
+name: Label Issues on Develop Merge
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  label-issues:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Necessario per scaricare tutta la cronologia e trovare i messaggi
+
+      - name: Extract Issue Numbers and Label Them
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 1. Trova i numeri delle issue nei messaggi di commit dall'ultimo push
+          # Cerca pattern come "Fix #123", "Closes #456", ecc.
+          ISSUES=$(git log ${{ github.event.before }}..${{ github.event.after }} --pretty=%B | grep -oP '(?i)(?:fix|fixes|fixed|close|closes|closed|resolve|resolves|resolved) #\K\d+' | sort -u)
+
+          if [ -z "$ISSUES" ]; then
+            echo "Nessuna issue trovata nei messaggi di commit."
+            exit 0
+          fi
+
+          for ISSUE_ID in $ISSUES; do
+            echo "Aggiungo la label 'on develop' alla issue #$ISSUE_ID"
+            gh issue edit "$ISSUE_ID" --add-label "on develop"
+          done
