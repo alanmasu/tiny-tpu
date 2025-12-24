@@ -1,32 +1,43 @@
-name: Label Issues on Develop Merge
+name: Label Issues on Merge to Develop
 
 on:
-  push:
+  pull_request:
     branches:
       - develop
+    types: [closed] # Si attiva quando la PR viene chiusa
 
 jobs:
   label-issues:
+    # Eseguiamo il job solo se la PR è stata effettivamente unita (merged), non solo chiusa
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
       issues: write
-      pull-requests: write
+      pull-requests: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Necessario per scaricare tutta la cronologia e trovare i messaggi
+          fetch-depth: 0
 
-      - name: Extract Issue Numbers and Label Them
+      - name: Extract Issue Numbers from PR Commits
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # 1. Trova i numeri delle issue nei messaggi di commit dall'ultimo push
-          # Cerca pattern come "Fix #123", "Closes #456", ecc.
-          ISSUES=$(git log ${{ github.event.before }}..${{ github.event.after }} --pretty=%B | grep -oP '(?i)(?:fix|fixes|fixed|close|closes|closed|resolve|resolves|resolved) #\K\d+' | sort -u)
+          # Otteniamo i numeri delle issue dai messaggi di commit della PR
+          # Usiamo l'API di GitHub per elencare i commit della PR specifica
+          # e cerchiamo i pattern Fix/Close #123
+          
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          
+          echo "Analizzo i commit della PR #$PR_NUMBER..."
+          
+          # Recuperiamo i messaggi di tutti i commit della PR tramite la CLI di GitHub
+          ISSUES=$(gh pr view $PR_NUMBER --json commits --template '{{range .commits}}{{.message}}{{"\n"}}{{end}}' \
+          | grep -oP '(?i)(?:fix|fixes|fixed|close|closes|closed|resolve|resolves|resolved) #\K\d+' | sort -u)
 
           if [ -z "$ISSUES" ]; then
-            echo "Nessuna issue trovata nei messaggi di commit."
+            echo "Nessun riferimento a issue trovato nei commit della PR."
             exit 0
           fi
 
