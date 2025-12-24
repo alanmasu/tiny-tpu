@@ -1,22 +1,23 @@
 [*]
-[*] GTKWave Analyzer v3.3.116 (w)1999-2023 BSI
-[*] Thu Aug  7 12:43:18 2025
+[*] GTKWave Analyzer v3.3.118 (w)1999-2023 BSI
+[*] Thu Dec  4 11:55:34 2025
 [*]
-[dumpfile] "/home/xander/verilog/tpu/apex-tpu/waveforms/systolic.vcd"
-[dumpfile_mtime] "Thu Aug  7 12:23:55 2025"
-[dumpfile_size] 25396
-[savefile] "/home/xander/verilog/tpu/apex-tpu/waveforms/systolic.gtkw"
+[dumpfile] "/home/alan.masutti/ACA_project/tiny-tpu/waveforms/systolic.vcd"
+[dumpfile_mtime] "Thu Dec  4 10:03:31 2025"
+[dumpfile_size] 18926
+[savefile] "/home/alan.masutti/ACA_project/tiny-tpu/waveforms/systolic.gtkw"
 [timestart] 0
-[size] 1942 888
-[pos] 181 529
-*-15.000000 94200 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[size] 1918 944
+[pos] -1 -1
+*-14.160103 58760 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] systolic.
 [sst_width] 276
-[signals_width] 230
+[signals_width] 303
 [sst_expanded] 1
-[sst_vpaned_height] 258
+[sst_vpaned_height] 278
 @28
 systolic.clk
+[color] 1
 systolic.rst
 @40000420
 [fpshift_count] 8
@@ -33,11 +34,7 @@ systolic.sys_accept_w_2
 [fpshift_count] 8
 systolic.sys_data_in_11[15:0]
 [fpshift_count] 8
-systolic.sys_start_1
-[fpshift_count] 8
 systolic.sys_data_in_21[15:0]
-[fpshift_count] 8
-systolic.sys_start_2
 @200
 -
 @40000420
@@ -54,26 +51,20 @@ systolic.sys_data_out_22[15:0]
 systolic.sys_valid_out_21
 [fpshift_count] 8
 systolic.sys_valid_out_22
-@200
--
+@28
+systolic.ub_rd_col_size_valid_in
+@800200
+-PE_11
+@29
+systolic.pe11.pe_enabled
+@28
+systolic.pe11.pe_accept_w_in
 @40000420
-[fpshift_count] 8
-systolic.pe11.weight_reg_inactive[15:0]
 [fpshift_count] 8
 systolic.pe11.weight_reg_active[15:0]
 [fpshift_count] 8
-systolic.pe12.weight_reg_inactive[15:0]
-[fpshift_count] 8
-systolic.pe12.weight_reg_active[15:0]
-[fpshift_count] 8
-systolic.pe21.weight_reg_inactive[15:0]
-[fpshift_count] 8
-systolic.pe21.weight_reg_active[15:0]
-[fpshift_count] 8
-systolic.pe22.weight_reg_inactive[15:0]
-[fpshift_count] 8
-systolic.pe22.weight_reg_active[15:0]
-@200
--
+systolic.pe11.weight_reg_inactive[15:0]
+@1000200
+-PE_11
 [pattern_trace] 1
 [pattern_trace] 0
