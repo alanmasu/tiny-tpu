@@ -33,7 +33,7 @@ jobs:
           echo "Analizzo i commit della PR #$PR_NUMBER..."
           
           # Recuperiamo i messaggi di tutti i commit della PR tramite la CLI di GitHub
-          ISSUES=$(gh pr view $PR_NUMBER --json commits --template '{{range .commits}}{{.message}}{{"\n"}}{{end}}' \
+          ISSUES=$(gh pr view $PR_NUMBER --json commits --template '{{range .commits}}{{.messageHeadline}}{{"\n"}}{{end}}' \
           | grep -oP '(?i)(?:fix|fixes|fixed|close|closes|closed|resolve|resolves|resolved) #\K\d+' | sort -u)
 
           if [ -z "$ISSUES" ]; then
