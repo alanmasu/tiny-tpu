@@ -31,29 +31,45 @@ def to_fixed(val, frac_bits=8):
 # First column of accept weight signal turns off -> set switch flag on and set first row start signal on (start loading in X)
 @cocotb.test()
 async def test_systolic_array(dut): 
-
     # Create a clock
     clock = Clock(dut.clk, 10, units="ns")
     cocotb.start_soon(clock.start())
+    
+    await RisingEdge(dut.clk)
     
     # rst the DUT (device under test)
     dut.rst.value = 1
     dut.sys_accept_w_1.value = 0
     dut.sys_accept_w_2.value = 0
     dut.sys_switch_in.value = 0
-    await RisingEdge(dut.clk)
+    dut.sys_data_in_11.value = to_fixed(0.0)
+    dut.sys_data_in_21.value = to_fixed(0.0)
+    dut.sys_weight_in_11.value = to_fixed(0.0)
+    dut.sys_weight_in_12.value = to_fixed(0.0)
+    
+    dut.ub_rd_col_size_valid_in.value = 0
+    dut.ub_rd_col_size_in.value = 1
+    
+    await Timer(9, "ns")
+    # await RisingEdge(dut.clk)
+
 
     # load in transposed weight matrix:
     dut.rst.value = 0
     dut.sys_weight_in_11.value = to_fixed(W1[0][1])
+    
+    dut.ub_rd_col_size_valid_in.value = 1
     dut.sys_accept_w_1.value = 1
     await RisingEdge(dut.clk)
+    await Timer(1, "ns")
+
 
     dut.sys_weight_in_11.value = to_fixed(W1[0][0])
     dut.sys_accept_w_1.value = 1
     dut.sys_weight_in_12.value = to_fixed(W1[1][1])
     dut.sys_accept_w_2.value = 1
     await RisingEdge(dut.clk)
+    await Timer(1, "ns")
 
     dut.sys_accept_w_1.value = 0
     dut.sys_weight_in_12.value = to_fixed(W1[1][0])
@@ -68,6 +84,7 @@ async def test_systolic_array(dut):
     dut.sys_data_in_11.value = to_fixed(X[1][0])
     dut.sys_data_in_21.value = to_fixed(X[0][1])
     await RisingEdge(dut.clk)
+    await Timer(1, "ns")
 
     dut.sys_data_in_11.value = to_fixed(X[2][0])
     dut.sys_data_in_21.value = to_fixed(X[1][1])
@@ -76,10 +93,11 @@ async def test_systolic_array(dut):
     dut.sys_data_in_11.value = to_fixed(X[3][0])
     dut.sys_data_in_21.value = to_fixed(X[2][1])
     await RisingEdge(dut.clk)
+    await Timer(1, "ns")
 
     dut.sys_data_in_21.value = to_fixed(X[3][1])
     await RisingEdge(dut.clk)
 
     await RisingEdge(dut.clk)
     
-    await ClockCycles(dut.clk, 10)
+    await ClockCycles(dut.clk, 3)
