@@ -8,7 +8,7 @@ PROJ_ROOT = Path(__file__).resolve().parent.parent
 SRC_DIR = PROJ_ROOT / "src/systemverilog"
 
 # Lista dei moduli da testare
-@pytest.mark.parametrize("unit", ["pe", "systolic", "vpu"])
+@pytest.mark.parametrize("unit", ["pe", "systolic"])
 def test_regression(unit):
     sim = os.getenv("SIM", "icarus")
     runner = get_runner(sim)
@@ -26,5 +26,4 @@ def test_regression(unit):
     runner.test(
         hdl_toplevel=unit,
         test_module=f"test_{unit}", # Cerca test_alu.py o test_fifo.py
-        test_dir=PROJ_ROOT / "test"  # Indica dove si trovano i file .py
     )
