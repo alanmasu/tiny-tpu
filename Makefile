@@ -2,7 +2,8 @@
 IVERILOG = iverilog
 VVP = vvp
 COCOTB_PREFIX = $(shell cocotb-config --prefix)
-
+VENV = $(shell pwd)/.venv
+export PATH := $(VENV)/bin:$(PATH)
 
 COCOTB_LIBS = $(COCOTB_PREFIX)/cocotb/libs
 
@@ -165,6 +166,20 @@ test_gradient_descent: $(SIM_BUILD_DIR)
 	! grep failure results.xml
 	mv gradient_descent.vcd waveforms/ 2>/dev/null || true
 
+
+# ============ REGRESSION TEST STUFF =============
+# create virtual environment and install cocotb
+$(VENV)/bin/activate:
+	@echo "Creating virtual environment and installing cocotb..."
+	python3 -m venv $(VENV)
+	$(VENV)/bin/pip install cocotb==1.9.2 cocotb-bus==0.3.0 pytest
+
+venv: $(VENV)/bin/activate
+	@echo "Virtual environment is ready."
+
+# Test target
+test: venv
+	pytest test/runner.py
 
 # ============ DO NOT MODIFY BELOW THIS LINE ==============
 
