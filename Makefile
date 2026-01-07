@@ -172,7 +172,7 @@ test_gradient_descent: $(SIM_BUILD_DIR)
 $(VENV)/bin/activate:
 	@echo "Creating virtual environment and installing cocotb..."
 	python3 -m venv $(VENV)
-	$(VENV)/bin/pip install cocotb==1.9.2 cocotb-bus==0.3.0 pytest
+	$(VENV)/bin/pip install cocotb==1.9.2 cocotb-bus==0.3.0 pytest numpy
 
 venv: $(VENV)/bin/activate
 	@echo "Virtual environment is ready."
