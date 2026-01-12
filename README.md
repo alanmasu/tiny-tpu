@@ -50,15 +50,13 @@ https://github.com/user-attachments/assets/b5d6aefe-4250-4c6d-866e-65d519e4de74
     - [Ubuntu/Linux Specific](#ubuntulinux-specific)
   - [Adding Modules](#adding-modules)
     - [1. Create the Module File](#1-create-the-module-file)
-    - [2. Create the Dump File](#2-create-the-dump-file)
-    - [3. Creating Tests](#3-creating-tests)
-    - [4. Makefile Updates](#4-makefile-updates)
-    - [5. View Waveforms](#5-view-waveforms)
+    - [2. Creating Tests](#2-creating-tests)
+    - [3. View Waveforms](#3-view-waveforms)
   - [Makefile Commands](#makefile-commands)
   - [GTKWwave Setup](#gtkwwave-setup)
   - [What is a .gtkw File?](#what-is-a-gtkw-file)
   - [Motivation](#motivation)
-  - [Installing \`sb2v'](#installing-sb2v)
+  - [Installing \`sv2v'](#installing-sv2v)
 
 ## Architecture
 
@@ -236,36 +234,11 @@ Follow these steps to add a new module to the project:
 
 Add your new module file `<MODULE_NAME>.sv` in the `src/` directory.
 
-### 2. Create the Dump File
-
-Create `dump_<MODULE_NAME>.sv` in the `test/` directory with the following code:
-
-```systemverilog
-module dump();
-initial begin
-  $dumpfile("waveforms/<MODULE_NAME>.vcd");
-  $dumpvars(0, <MODULE_NAME>); 
-end
-endmodule
-```
-
-### 3. Creating Tests
+### 2. Creating Tests
 
 Create `test_<MODULE_NAME>.py` in the `test/` directory.
 
-### 4. Makefile Updates
-
-Add your module to the `SOURCES` variable and create a test target:
-
-```makefile
-test_<MODULE_NAME>: $(SIM_BUILD_DIR)
-	$(IVERILOG) -o $(SIM_VVP) -s <MODULE_NAME> -s dump -g2012 $(SOURCES) test/dump_<MODULE_NAME>.sv
-	PYTHONOPTIMIZE=$(NOASSERT) MODULE=test_<MODULE_NAME> $(VVP) -M $(COCOTB_LIBS) -m libcocotbvpi_icarus $(SIM_VVP)
-	! grep failure results.xml
-	mv <MODULE_NAME>.vcd waveforms/ 2>/dev/null || true
-```
-
-### 5. View Waveforms
+### 3. View Waveforms
 
 Run the following command to view the generated waveforms:
 
@@ -312,7 +285,7 @@ Before this project, none of us had professional experience in hardware architec
 
 We hope that the inventive nature of the article at [tinytpu.com](https://tinytpu.com), this README, and the code in this repository will help you walk through our steps and learn how to approach problems with an inventive mindset.
 
-## Installing `sb2v' 
+## Installing `sv2v' 
 1) Installing Stack;
 2) Go to `/opt`:
     ```bash
