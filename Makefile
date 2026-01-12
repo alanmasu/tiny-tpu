@@ -25,6 +25,7 @@ venv:
 # Regression test target (runs the pytest runner)
 test: venv $(SIM_BUILD_DIR)
 	pytest test/runner.py
+	@make --no-print-directory clean_sim
 
 # Individual module test targets
 test_%: venv $(SIM_BUILD_DIR)
