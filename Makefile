@@ -2,6 +2,7 @@
 VENV = $(shell pwd)/.venv
 PYTHON = $(VENV)/bin/python3
 export PATH := $(VENV)/bin:$(PATH)
+export PYTHONPATH := test:$(PYTHONPATH)
 
 # Ensure cocotb-config commands are executed from the virtual environment
 COCOTB_CONFIG = $(VENV)/bin/cocotb-config
@@ -37,7 +38,7 @@ test_%: venv $(SIM_BUILD_DIR)
 	$(MAKE) -f $(COCOTB_MAKEFILE) \
 		SIM=$(SIM) \
 		TOPLEVEL_LANG=$(TOPLEVEL_LANG) \
-		MODULE=test.test_$* \
+		MODULE=test_$* \
 		TOPLEVEL=$* \
 		VERILOG_SOURCES=" $(SIM_BUILD_DIR)/dump_$*.sv $(VERILOG_SOURCES)" \
 		COMPILE_ARGS="-g2012 -s dump" \
