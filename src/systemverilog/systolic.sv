@@ -14,12 +14,12 @@ module systolic #(
     
     // input signals from left side of systolic array
     input logic [(16 * SYSTOLIC_ARRAY_WIDTH)-1:0] sys_data_in,
-    input logic sys_start,    // aka Switch signal
-    input logic [$clog2(SYSTOLIC_ARRAY_WIDTH)-1:0] ub_rd_col_size_in,
+    input logic sys_start,
+    input logic [$clog2(SYSTOLIC_ARRAY_WIDTH):0] ub_rd_col_size_in,
     input logic ub_rd_col_size_valid_in,
 
     // output signals from bottom side of systolic array
-    output logic [(16 * SYSTOLIC_ARRAY_WIDTH)-1:0] sys_data_out_x,
+    output logic [(16 * SYSTOLIC_ARRAY_WIDTH)-1:0] sys_data_out,
     output wire [SYSTOLIC_ARRAY_WIDTH-1:0] sys_valid_out
 );
     // PE interfaces
@@ -49,7 +49,7 @@ module systolic #(
             for (genvar col = 0; col < SYSTOLIC_ARRAY_WIDTH; col++) begin : pe_cols
                 if (row == 0) begin // first row
                     if (col == 0) begin // first row and first column
-                        pe pe_inst (
+                        pe pe_inst(
                             .clk(clk),
                             .rst(rst),
 
@@ -74,7 +74,7 @@ module systolic #(
                             .pe_switch_out( peIfMatrix[`toRCFormat(row, col)].pe_switch_out )
                         );
                     end else begin // first row but not first column
-                        pe pe_inst (
+                        pe pe_inst(
                             .clk(clk),
                             .rst(rst),
 
@@ -99,7 +99,7 @@ module systolic #(
                     end
                 end else if (row == SYSTOLIC_ARRAY_WIDTH - 1) begin  // last row first column
                     if (col == 0) begin
-                        pe pe_inst (
+                        pe pe_inst(
                             .clk(clk),
                             .rst(rst),
 
@@ -110,13 +110,13 @@ module systolic #(
                             // West INPUT wires of PE
                             .pe_input_in( sys_data_in_arr[row] ),
                             .pe_valid_in( pe_valid_in_arr[row] ),
-                            .pe_switch_in( sys_switch_in ),
+                            .pe_switch_in( peIfMatrix[`toRCFormat(row-1, col)].pe_switch_out ),
                             .pe_enabled(pe_enabled[col]),
                             // South OUTPUT wires of the PE
                             .pe_psum_out( sys_psum_out_arr[col] )
                         );
                     end else begin
-                        pe pe_inst (
+                        pe pe_inst(
                             .clk(clk),
                             .rst(rst),
 
@@ -135,7 +135,7 @@ module systolic #(
                     end
                 end else begin // middle rows
                     if (col == 0) begin // first column of middle rows
-                        pe pe_inst (
+                        pe pe_inst(
                             .clk(clk),
                             .rst(rst),
 
@@ -146,7 +146,7 @@ module systolic #(
                             // West INPUT wires of PE
                             .pe_input_in( sys_data_in_arr[row] ),
                             .pe_valid_in( pe_valid_in_arr[row] ),
-                            .pe_switch_in( sys_switch_in ),
+                            .pe_switch_in( peIfMatrix[`toRCFormat(row-1, col)].pe_switch_out ),
                             .pe_enabled(pe_enabled[col]),
                             // South OUTPUT wires of the PE
                             .pe_psum_out( peIfMatrix[`toRCFormat(row, col)].pe_psum_out ),
@@ -158,7 +158,7 @@ module systolic #(
                             .pe_switch_out( peIfMatrix[`toRCFormat(row, col)].pe_switch_out )
                         );
                     end else begin // middle rows not first column
-                        pe pe_inst (
+                        pe pe_inst(
                             .clk(clk),
                             .rst(rst),
 
