@@ -7,163 +7,191 @@ module systolic #(
     input logic clk,
     input logic rst,
 
-    // input signals from left side of systolic array
-    input logic [15:0] sys_data_in_1x,
-    input logic [15:0] sys_data_in_2x,
-    input logic sys_start,    // aka Switch signal
-
     // input signals from top of systolic array
-    input logic [15:0] sys_weight_in_x1, 
-    input logic [15:0] sys_weight_in_x2,
-    input logic sys_accept_w_1,             // accept weight signal propagates only from top to bottom in column 1
-    input logic sys_accept_w_2,             // accept weight signal propagates only from top to bottom in column 2
-
+    input logic [(16 * SYSTOLIC_ARRAY_WIDTH)-1:0] sys_weight_in,
+    input logic [SYSTOLIC_ARRAY_WIDTH-1:0]sys_accept_w,           // accept weight signal propagates only from top to bottom in column
     input logic sys_switch_in,               // switch signal copies weight from shadow buffer to active buffer. propagates from top left to bottom right
-
-    input logic [15:0] ub_rd_col_size_in,
+    
+    // input signals from left side of systolic array
+    input logic [(16 * SYSTOLIC_ARRAY_WIDTH)-1:0] sys_data_in,
+    input logic sys_start,    // aka Switch signal
+    input logic [$clog2(SYSTOLIC_ARRAY_WIDTH)-1:0] ub_rd_col_size_in,
     input logic ub_rd_col_size_valid_in,
 
     // output signals from bottom side of systolic array
-    output logic [15:0] sys_data_out_x1,
-    output logic [15:0] sys_data_out_x2,
-    output wire sys_valid_out_x1, 
-    output wire sys_valid_out_x2
+    output logic [(16 * SYSTOLIC_ARRAY_WIDTH)-1:0] sys_data_out_x,
+    output wire [SYSTOLIC_ARRAY_WIDTH-1:0] sys_valid_out
 );
-    //West to East
-    // input_out for each PE (left to right)
-    wire [15:0] pe_input_out_11;   // pe11 out to pe12 in
-    wire [15:0] pe_input_out_21;   // pe21 out to pe22 in
-    wire pe_valid_out_11;   // pe11 out to pe12 in
-    wire pe_valid_out_21;   // pe21 out to pe22 in
-
-    // psum_out for each PE (top to bottom)
-    wire [15:0] pe_psum_out_11;    // pe11 out to pe21 in
-    wire [15:0] pe_psum_out_12;    // pe12 out to pe22 in
-    wire [15:0] pe_weight_out_11;  // pe11 out to pe21 in
-    wire [15:0] pe_weight_out_12;  // pe12 out to pe22 in
-    wire pe_accept_w_out_11;      // pe11 out to pe21 in
-    wire pe_accept_w_out_12;      // pe12 out to pe22 in
-
-    
-
-    // switch_out for each PE
-    wire pe_switch_out_11;  // pe11 out to pe12 in
-    wire pe_switch_out_21;  // pe21 out to pe22 in
+    // PE interfaces
+    pe_if peIfMatrix [(SYSTOLIC_ARRAY_WIDTH**2)-1:0] ();
     
 
     // PE columns to enable
-    logic [1:0] pe_enabled;
+    logic [SYSTOLIC_ARRAY_WIDTH-1:0] pe_enabled;
 
 
-    assign sys_valid_out_x1 = pe_valid_out_21;
+    // assign sys_valid_out_x1 = pe_valid_out_21;
 
-    // top left PE
-    pe pe11 (
-        .clk(clk),
-        .rst(rst),
+    localparam int DATA_WIDTH = (16 * SYSTOLIC_ARRAY_WIDTH);
 
-        // North wires of PE
-        .pe_psum_in(16'b0),
-        .pe_weight_in(sys_weight_in_x1),
-        .pe_accept_w_in(sys_accept_w_1),
+    logic [15:0] sys_weight_in_arr[0:DATA_WIDTH - 1];
+    logic [15:0] sys_psum_in_arr[0:DATA_WIDTH - 1];
+    logic [15:0] sys_data_in_arr[0:DATA_WIDTH - 1];
+    logic [15:0] sys_psum_out_arr[0:DATA_WIDTH - 1];
 
-        // West wires of PE
-        .pe_input_in(sys_data_in_1x),
-        .pe_valid_in(sys_start),
-        .pe_switch_in(sys_switch_in),
-        .pe_enabled(pe_enabled[0]),
+    logic pe_valid_in_arr [0:SYSTOLIC_ARRAY_WIDTH - 1];
 
-        // South wires of the PE
-        .pe_psum_out(pe_psum_out_11),
-        .pe_weight_out(pe_weight_out_11),
-        .pe_accept_w_out(pe_accept_w_out_11),
+    `define toRCFormat(R, C) ((R) * SYSTOLIC_ARRAY_WIDTH + (C))
 
+    
+    generate 
+        for(genvar row = 0; row < SYSTOLIC_ARRAY_WIDTH; row++) begin : pe_rows
+            for (genvar col = 0; col < SYSTOLIC_ARRAY_WIDTH; col++) begin : pe_cols
+                if (row == 0) begin // first row
+                    if (col == 0) begin // first row and first column
+                        pe pe_inst (
+                            .clk(clk),
+                            .rst(rst),
 
-        // East wires of the PE
-        .pe_input_out(pe_input_out_11),
-        .pe_valid_out(pe_valid_out_11), 
-        .pe_switch_out(pe_switch_out_11)
-    );
+                            // North INPUT wires of PE
+                            .pe_psum_in( sys_psum_in_arr[col] ),
+                            .pe_weight_in( sys_weight_in_arr[col] ),
+                            .pe_accept_w_in( sys_accept_w[col] ),
+                            // West INPUT wires of PE
+                            .pe_input_in( sys_data_in_arr[row] ),
+                            .pe_valid_in( pe_valid_in_arr[row] ),
+                            .pe_switch_in( sys_switch_in ),
+                            .pe_enabled(pe_enabled[col]),
 
-    // top right PE
-    pe pe12 (
-        .clk(clk),
-        .rst(rst),
+                            // South OUTPUT wires of the PE
+                            .pe_psum_out( peIfMatrix[`toRCFormat(row, col)].pe_psum_out ),
+                            .pe_weight_out( peIfMatrix[`toRCFormat(row, col)].pe_weight_out ), 
+                            .pe_accept_w_out( peIfMatrix[`toRCFormat(row, col)].pe_accept_w_out ),
 
-        // North wires of PE
-        .pe_psum_in(16'b0),
-        .pe_weight_in(sys_weight_in_x2),
-        .pe_accept_w_in(sys_accept_w_2),
+                            // East OUTPUT wires of the PE
+                            .pe_input_out( peIfMatrix[`toRCFormat(row, col)].pe_input_out ),
+                            .pe_valid_out( peIfMatrix[`toRCFormat(row, col)].pe_valid_out ),
+                            .pe_switch_out( peIfMatrix[`toRCFormat(row, col)].pe_switch_out )
+                        );
+                    end else begin // first row but not first column
+                        pe pe_inst (
+                            .clk(clk),
+                            .rst(rst),
 
-        // West wires of PE
-        .pe_input_in(pe_input_out_11),
-        .pe_valid_in(pe_valid_out_11),
-        .pe_switch_in(pe_switch_out_11),
-        .pe_enabled(pe_enabled[1]),
+                            // North INPUT wires of PE
+                            .pe_psum_in( sys_psum_in_arr[col] ),
+                            .pe_weight_in( sys_weight_in_arr[col] ),
+                            .pe_accept_w_in( sys_accept_w[col] ),
+                            // West INPUT wires of PE
+                            .pe_input_in( peIfMatrix[`toRCFormat(row, col-1)].pe_input_out ),
+                            .pe_valid_in( peIfMatrix[`toRCFormat(row, col-1)].pe_valid_out ),
+                            .pe_switch_in( peIfMatrix[`toRCFormat(row, col-1)].pe_switch_out ),
+                            .pe_enabled(pe_enabled[col]),
+                            // South OUTPUT wires of the PE
+                            .pe_psum_out( peIfMatrix[`toRCFormat(row, col)].pe_psum_out ),
+                            .pe_weight_out( peIfMatrix[`toRCFormat(row, col)].pe_weight_out ), 
+                            .pe_accept_w_out( peIfMatrix[`toRCFormat(row, col)].pe_accept_w_out ),
+                            // East OUTPUT wires of the PE
+                            .pe_input_out( peIfMatrix[`toRCFormat(row, col)].pe_input_out ),
+                            .pe_valid_out( peIfMatrix[`toRCFormat(row, col)].pe_valid_out ),
+                            .pe_switch_out( peIfMatrix[`toRCFormat(row, col)].pe_switch_out )
+                        );
+                    end
+                end else if (row == SYSTOLIC_ARRAY_WIDTH - 1) begin  // last row first column
+                    if (col == 0) begin
+                        pe pe_inst (
+                            .clk(clk),
+                            .rst(rst),
 
-        // South wires of the PE
-        .pe_psum_out(pe_psum_out_12),
-        .pe_weight_out(pe_weight_out_12),
-        .pe_accept_w_out(pe_accept_w_out_12),
+                            // North INPUT wires of PE
+                            .pe_psum_in( peIfMatrix[`toRCFormat(row-1, col)].pe_psum_out ),
+                            .pe_weight_in( peIfMatrix[`toRCFormat(row-1, col)].pe_weight_out ),
+                            .pe_accept_w_in( peIfMatrix[`toRCFormat(row-1, col)].pe_accept_w_out ),
+                            // West INPUT wires of PE
+                            .pe_input_in( sys_data_in_arr[row] ),
+                            .pe_valid_in( pe_valid_in_arr[row] ),
+                            .pe_switch_in( sys_switch_in ),
+                            .pe_enabled(pe_enabled[col]),
+                            // South OUTPUT wires of the PE
+                            .pe_psum_out( sys_psum_out_arr[col] )
+                        );
+                    end else begin
+                        pe pe_inst (
+                            .clk(clk),
+                            .rst(rst),
 
-        // East wires of the PE
-        .pe_switch_out(),
-        .pe_input_out(),
-        .pe_valid_out() 
-    );
+                            // North INPUT wires of PE
+                            .pe_psum_in( peIfMatrix[`toRCFormat(row-1, col)].pe_psum_out ),
+                            .pe_weight_in( peIfMatrix[`toRCFormat(row-1, col)].pe_weight_out ),
+                            .pe_accept_w_in( peIfMatrix[`toRCFormat(row-1, col)].pe_accept_w_out ),
+                            // West INPUT wires of PE
+                            .pe_input_in( peIfMatrix[`toRCFormat(row, col-1)].pe_input_out ),
+                            .pe_valid_in( peIfMatrix[`toRCFormat(row, col-1)].pe_valid_out ),
+                            .pe_switch_in( peIfMatrix[`toRCFormat(row, col-1)].pe_switch_out ),
+                            .pe_enabled(pe_enabled[col]),
+                            // South OUTPUT wires of the PE
+                            .pe_psum_out( sys_psum_out_arr[col] )
+                        );
+                    end
+                end else begin // middle rows
+                    if (col == 0) begin // first column of middle rows
+                        pe pe_inst (
+                            .clk(clk),
+                            .rst(rst),
 
-    // bottom left PE
-    pe pe21 (
-        .clk(clk),
-        .rst(rst),
+                            // North INPUT wires of PE
+                            .pe_psum_in( peIfMatrix[`toRCFormat(row-1, col)].pe_psum_out ),
+                            .pe_weight_in( peIfMatrix[`toRCFormat(row-1, col)].pe_weight_out ),
+                            .pe_accept_w_in( peIfMatrix[`toRCFormat(row-1, col)].pe_accept_w_out ),
+                            // West INPUT wires of PE
+                            .pe_input_in( sys_data_in_arr[row] ),
+                            .pe_valid_in( pe_valid_in_arr[row] ),
+                            .pe_switch_in( sys_switch_in ),
+                            .pe_enabled(pe_enabled[col]),
+                            // South OUTPUT wires of the PE
+                            .pe_psum_out( peIfMatrix[`toRCFormat(row, col)].pe_psum_out ),
+                            .pe_weight_out( peIfMatrix[`toRCFormat(row, col)].pe_weight_out ), 
+                            .pe_accept_w_out( peIfMatrix[`toRCFormat(row, col)].pe_accept_w_out ),
+                            // East OUTPUT wires of the PE
+                            .pe_input_out( peIfMatrix[`toRCFormat(row, col)].pe_input_out ),
+                            .pe_valid_out( peIfMatrix[`toRCFormat(row, col)].pe_valid_out ),
+                            .pe_switch_out( peIfMatrix[`toRCFormat(row, col)].pe_switch_out )
+                        );
+                    end else begin // middle rows not first column
+                        pe pe_inst (
+                            .clk(clk),
+                            .rst(rst),
 
-        // North wires of PE
-        .pe_psum_in(pe_psum_out_11),
-        .pe_weight_in(pe_weight_out_11),
-        .pe_accept_w_in(sys_accept_w_1),
+                            // North INPUT wires of PE
+                            .pe_psum_in( peIfMatrix[`toRCFormat(row-1, col)].pe_psum_out ),
+                            .pe_weight_in( peIfMatrix[`toRCFormat(row-1, col)].pe_weight_out ),
+                            .pe_accept_w_in( peIfMatrix[`toRCFormat(row-1, col)].pe_accept_w_out ),
+                            // West INPUT wires of PE
+                            .pe_input_in( peIfMatrix[`toRCFormat(row, col-1)].pe_input_out ),
+                            .pe_valid_in( peIfMatrix[`toRCFormat(row, col-1)].pe_valid_out ),
+                            .pe_switch_in( peIfMatrix[`toRCFormat(row, col-1)].pe_switch_out ),
+                            .pe_enabled(pe_enabled[col]),
+                            // South OUTPUT wires of the PE
+                            .pe_psum_out( peIfMatrix[`toRCFormat(row, col)].pe_psum_out ),
+                            .pe_weight_out( peIfMatrix[`toRCFormat(row, col)].pe_weight_out ), 
+                            .pe_accept_w_out( peIfMatrix[`toRCFormat(row, col)].pe_accept_w_out ),
+                            // East OUTPUT wires of the PE
+                            .pe_input_out( peIfMatrix[`toRCFormat(row, col)].pe_input_out ),
+                            .pe_valid_out( peIfMatrix[`toRCFormat(row, col)].pe_valid_out ),
+                            .pe_switch_out( peIfMatrix[`toRCFormat(row, col)].pe_switch_out )
+                        );
+                    end
+                end
+            end 
+        end 
+        
+        // Array population logic
+        for (genvar i = 0; i < DATA_WIDTH; i++) begin : input_assignment
+            assign sys_weight_in_arr[i] = sys_weight_in[(16*i)+15 -: 16];
+            assign sys_data_in_arr[i] = sys_data_in[(16*i)+15 -: 16];
+        end
+    endgenerate
 
-        // West wires of PE
-        .pe_input_in(sys_data_in_2x),
-        .pe_valid_in(pe_valid_out_11),
-        .pe_switch_in(sys_switch_in),
-        .pe_enabled(pe_enabled[0]),
-
-        // South wires of the PE
-        .pe_psum_out(sys_data_out_x1),
-        .pe_weight_out(),
-
-
-        // East wires of the PE
-        .pe_switch_out(pe_switch_out_21),
-        .pe_input_out(pe_input_out_21),
-        .pe_valid_out(pe_valid_out_21)
-    );
-
-    // bottom right PE
-    pe pe22 (
-        .clk(clk),
-        .rst(rst),
-
-        // North wires of PE
-        .pe_psum_in(pe_psum_out_12),
-        .pe_weight_in(pe_weight_out_12),
-        .pe_accept_w_in(sys_accept_w_2),
-
-        // West wires of PE
-        .pe_input_in(pe_input_out_21),
-        .pe_valid_in(pe_valid_out_21),
-        .pe_switch_in(pe_switch_out_21),
-        .pe_enabled(pe_enabled[1]),
-
-        // South wires of the PE
-        .pe_psum_out(sys_data_out_x2),
-        .pe_weight_out(),
-
-        // East wires of the PE
-        .pe_input_out(),
-        .pe_valid_out(sys_valid_out_x2),
-        .pe_switch_out()
-    );
 
     always @ (posedge clk or posedge rst) begin
         if(rst) begin
