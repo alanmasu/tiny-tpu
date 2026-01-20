@@ -176,7 +176,7 @@ module test_systolic_tb;
         //TODO: Undestend the reason of the +2 offset at L+3
         for (genvar col = 0; col < SYSTOLIC_ARRAY_WIDTH; col++) begin : psum_in_assign
             always @(sys_data_out[(16*(col+1))-1 -:16]) begin
-                systolic_output[cycle_count - (SYSTOLIC_ARRAY_WIDTH -1 +2)][col] = sys_data_out[(16*(col+1))-1 -:16];
+                systolic_output[cycle_count - (SYSTOLIC_ARRAY_WIDTH - 1 + 2) - col][col] = sys_data_out[(16*(col+1))-1 -:16];
             end
         end
     endgenerate

@@ -106,7 +106,7 @@ module systolic #(
                             // North INPUT wires of PE
                             .pe_psum_in( peIfMatrix[`toRCFormat(row-1, col)].pe_psum_out ),
                             .pe_weight_in( peIfMatrix[`toRCFormat(row-1, col)].pe_weight_out ),
-                            .pe_accept_w_in( peIfMatrix[`toRCFormat(row-1, col)].pe_accept_w_out ),
+                            .pe_accept_w_in( sys_accept_w[col] ),
                             // West INPUT wires of PE
                             .pe_input_in( sys_data_in_arr[row] ),
                             .pe_valid_in( peIfMatrix[`toRCFormat(row-1, col)].pe_valid_out ),
@@ -114,7 +114,10 @@ module systolic #(
                             .pe_enabled(pe_enabled[col]),
                             // South OUTPUT wires of the PE
                             .pe_psum_out( sys_psum_out_arr[col] ),
-                            .pe_switch_out( peIfMatrix[`toRCFormat(row, col)].pe_switch_out )
+                            .pe_switch_out( peIfMatrix[`toRCFormat(row, col)].pe_switch_out ),
+                            // East OUTPUT wires of the PE
+                            .pe_input_out( peIfMatrix[`toRCFormat(row, col)].pe_input_out),
+                            .pe_valid_out( peIfMatrix[`toRCFormat(row, col)].pe_valid_out)
                         );
                     end else begin
                         pe pe_inst(
@@ -124,14 +127,18 @@ module systolic #(
                             // North INPUT wires of PE
                             .pe_psum_in( peIfMatrix[`toRCFormat(row-1, col)].pe_psum_out ),
                             .pe_weight_in( peIfMatrix[`toRCFormat(row-1, col)].pe_weight_out ),
-                            .pe_accept_w_in( peIfMatrix[`toRCFormat(row-1, col)].pe_accept_w_out ),
+                            .pe_accept_w_in(sys_accept_w[col] ),
                             // West INPUT wires of PE
                             .pe_input_in( peIfMatrix[`toRCFormat(row, col-1)].pe_input_out ),
                             .pe_valid_in( peIfMatrix[`toRCFormat(row, col-1)].pe_valid_out ),
                             .pe_switch_in( peIfMatrix[`toRCFormat(row, col-1)].pe_switch_out ),
                             .pe_enabled(pe_enabled[col]),
                             // South OUTPUT wires of the PE
-                            .pe_psum_out( sys_psum_out_arr[col] )
+                            .pe_psum_out( sys_psum_out_arr[col] ),
+                            .pe_switch_out( peIfMatrix[`toRCFormat(row, col)].pe_switch_out ),
+                            // East OUTPUT wires of the PE
+                            .pe_input_out( peIfMatrix[`toRCFormat(row, col)].pe_input_out),
+                            .pe_valid_out( peIfMatrix[`toRCFormat(row, col)].pe_valid_out)
                         );
                     end
                 end else begin // middle rows
@@ -143,7 +150,7 @@ module systolic #(
                             // North INPUT wires of PE
                             .pe_psum_in( peIfMatrix[`toRCFormat(row-1, col)].pe_psum_out ),
                             .pe_weight_in( peIfMatrix[`toRCFormat(row-1, col)].pe_weight_out ),
-                            .pe_accept_w_in( peIfMatrix[`toRCFormat(row-1, col)].pe_accept_w_out ),
+                            .pe_accept_w_in(sys_accept_w[col]),
                             // West INPUT wires of PE
                             .pe_input_in( sys_data_in_arr[row] ),
                             .pe_valid_in( peIfMatrix[`toRCFormat(row-1, col)].pe_valid_out ),
@@ -166,7 +173,7 @@ module systolic #(
                             // North INPUT wires of PE
                             .pe_psum_in( peIfMatrix[`toRCFormat(row-1, col)].pe_psum_out ),
                             .pe_weight_in( peIfMatrix[`toRCFormat(row-1, col)].pe_weight_out ),
-                            .pe_accept_w_in( peIfMatrix[`toRCFormat(row-1, col)].pe_accept_w_out ),
+                            .pe_accept_w_in( sys_accept_w[col] ),
                             // West INPUT wires of PE
                             .pe_input_in( peIfMatrix[`toRCFormat(row, col-1)].pe_input_out ),
                             .pe_valid_in( peIfMatrix[`toRCFormat(row, col-1)].pe_valid_out ),
