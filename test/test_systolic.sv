@@ -126,7 +126,7 @@ module test_systolic_tb;
     generate
         // Assign column inputs to DUT
         for (genvar col = 0; col < SYSTOLIC_ARRAY_WIDTH; col++) begin
-            always @(posedge clk or posedge rst) begin
+            always @(*) begin
                 if (rst) begin
                     // $display("Resetting weight inputs");
                     sys_weight_in[(16*(col+1))-1 -:16] <= 16'b0;
@@ -145,7 +145,7 @@ module test_systolic_tb;
 
         // Assign row inputs to DUT
         for (genvar row = 0; row < SYSTOLIC_ARRAY_WIDTH; row++) begin : data_in_assign
-            always @(posedge clk or posedge rst) begin
+            always @(*) begin
                 if (rst) begin
                     sys_data_in[(16*(row+1))-1 -:16] <= 16'b0;
                 end else begin
@@ -158,22 +158,25 @@ module test_systolic_tb;
             end
         end
 
+        // TODO: Ceck if this always block may work.
         // for (genvar col = 0; col < SYSTOLIC_ARRAY_WIDTH; col++) begin : psum_in_assign
         //     always @(posedge clk or posedge rst) begin
         //         if (rst) begin
         //             for (int row = 0; row < SYSTOLIC_ARRAY_WIDTH; row++) begin
-        //                 systolic_output[row][col] <= 16'b0;
+        //                 systolic_output[row][col] = 16'b0;
         //             end
         //         end else if (sys_valid_out[col]) begin
         //             if ( sys_valid_out[col] ) begin
-        //                 systolic_output[cycle_count - (SYSTOLIC_ARRAY_WIDTH -1)][col] <= sys_data_out[(16*(col+1))-1 -:16];
+        //                 systolic_output[cycle_count - (SYSTOLIC_ARRAY_WIDTH -1)][col] = sys_data_out[(16*(col+1))-1 -:16];
         //             end
         //         end
         //     end
         // end
+
+        //TODO: Undestend the reason of the +2 offset at L+3
         for (genvar col = 0; col < SYSTOLIC_ARRAY_WIDTH; col++) begin : psum_in_assign
             always @(sys_data_out[(16*(col+1))-1 -:16]) begin
-                systolic_output[cycle_count - (SYSTOLIC_ARRAY_WIDTH -1)][col] = sys_data_out[(16*(col+1))-1 -:16];
+                systolic_output[cycle_count - (SYSTOLIC_ARRAY_WIDTH -1 +2)][col] = sys_data_out[(16*(col+1))-1 -:16];
             end
         end
     endgenerate
@@ -186,6 +189,7 @@ module test_systolic_tb;
     bit b;
     initial begin
         vector16_t col_vec;
+        cycle_count = -1;
         allocMat(systolic_output, M, K);
         // //Disabled test for matMult cause we don't have an identity matrix starting by now
         matMult(matA, matW, result, 4, 2, 2);

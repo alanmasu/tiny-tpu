@@ -54,12 +54,12 @@ module systolic #(
                             .rst(rst),
 
                             // North INPUT wires of PE
-                            .pe_psum_in( sys_psum_in_arr[col] ),
+                            .pe_psum_in( '0 ),
                             .pe_weight_in( sys_weight_in_arr[col] ),
                             .pe_accept_w_in( sys_accept_w[col] ),
                             // West INPUT wires of PE
                             .pe_input_in( sys_data_in_arr[row] ),
-                            .pe_valid_in( pe_valid_in_arr[row] ),
+                            .pe_valid_in( sys_start ),
                             .pe_switch_in( sys_switch_in ),
                             .pe_enabled(pe_enabled[col]),
 
@@ -79,7 +79,7 @@ module systolic #(
                             .rst(rst),
 
                             // North INPUT wires of PE
-                            .pe_psum_in( sys_psum_in_arr[col] ),
+                            .pe_psum_in( '0 ),
                             .pe_weight_in( sys_weight_in_arr[col] ),
                             .pe_accept_w_in( sys_accept_w[col] ),
                             // West INPUT wires of PE
@@ -109,7 +109,7 @@ module systolic #(
                             .pe_accept_w_in( peIfMatrix[`toRCFormat(row-1, col)].pe_accept_w_out ),
                             // West INPUT wires of PE
                             .pe_input_in( sys_data_in_arr[row] ),
-                            .pe_valid_in( pe_valid_in_arr[row] ),
+                            .pe_valid_in( peIfMatrix[`toRCFormat(row-1, col)].pe_valid_out ),
                             .pe_switch_in( peIfMatrix[`toRCFormat(row-1, col)].pe_switch_out ),
                             .pe_enabled(pe_enabled[col]),
                             // South OUTPUT wires of the PE
@@ -145,7 +145,7 @@ module systolic #(
                             .pe_accept_w_in( peIfMatrix[`toRCFormat(row-1, col)].pe_accept_w_out ),
                             // West INPUT wires of PE
                             .pe_input_in( sys_data_in_arr[row] ),
-                            .pe_valid_in( pe_valid_in_arr[row] ),
+                            .pe_valid_in( peIfMatrix[`toRCFormat(row-1, col)].pe_valid_out ),
                             .pe_switch_in( peIfMatrix[`toRCFormat(row-1, col)].pe_switch_out ),
                             .pe_enabled(pe_enabled[col]),
                             // South OUTPUT wires of the PE
@@ -189,6 +189,9 @@ module systolic #(
         for (genvar i = 0; i < DATA_WIDTH; i++) begin : input_assignment
             assign sys_weight_in_arr[i] = sys_weight_in[(16*i)+15 -: 16];
             assign sys_data_in_arr[i] = sys_data_in[(16*i)+15 -: 16];
+
+            //Output assignment
+            assign sys_data_out[(16*i)+15 -: 16] = sys_psum_out_arr[i];
         end
     endgenerate
 
