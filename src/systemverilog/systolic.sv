@@ -113,7 +113,8 @@ module systolic #(
                             .pe_switch_in( peIfMatrix[`toRCFormat(row-1, col)].pe_switch_out ),
                             .pe_enabled(pe_enabled[col]),
                             // South OUTPUT wires of the PE
-                            .pe_psum_out( sys_psum_out_arr[col] )
+                            .pe_psum_out( sys_psum_out_arr[col] ),
+                            .pe_switch_out( peIfMatrix[`toRCFormat(row, col)].pe_switch_out )
                         );
                     end else begin
                         pe pe_inst(
