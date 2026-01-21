@@ -193,13 +193,18 @@ module systolic #(
             end 
         end 
         
-        // Array population logic
-        for (genvar i = 0; i < DATA_WIDTH; i++) begin : input_assignment
+        // Array population logic, TODO: Check the order of assignments, in particular the 'endianess'
+        for (genvar i = 0; i < SYSTOLIC_ARRAY_WIDTH; i++) begin : input_assignment
             assign sys_weight_in_arr[i] = sys_weight_in[(16*i)+15 -: 16];
             assign sys_data_in_arr[i] = sys_data_in[(16*i)+15 -: 16];
 
             //Output assignment
             assign sys_data_out[(16*i)+15 -: 16] = sys_psum_out_arr[i];
+            
+            // // Print for debug
+            // initial $display("Connecting sys_weight_in_arr[%0d] to sys_weight_in bits [%0d:%0d]", i, (16*i)+15, 16*i);
+            // initial $display("Connecting sys_data_out bits [%0d:%0d] to sys_psum_out_arr[%0d]", (16*i)+15, 16*i, i);
+            // initial $display("Connecting sys_data_in_arr[%0d] to sys_data_in bits [%0d:%0d]", i, (16*i)+15, 16*i);
         end
     endgenerate
 
