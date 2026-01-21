@@ -1,5 +1,6 @@
 `timescale 1ns/1ps
 // `define DEBUG
+// `define DEBUG_MATRIX
 
 module test_systolic_tb;
 
@@ -9,7 +10,9 @@ module test_systolic_tb;
     logic clk = 1;
     logic rst;
 
-    localparam int SYSTOLIC_ARRAY_WIDTH = 2;
+    localparam int SYSTOLIC_ARRAY_WIDTH = 4;
+    int M = 5, N = 4, K = SYSTOLIC_ARRAY_WIDTH;
+
 
     // Column size inputs
     logic [$clog2(SYSTOLIC_ARRAY_WIDTH):0] ub_rd_col_size_in = 0;
@@ -40,17 +43,10 @@ module test_systolic_tb;
         end
     endgenerate
 
-    int M = 4, N = 2, K = 2;
-    // int M = 2, N = 2, K = 2;
-
     // Matrices for testing
-    matrix16_t matA = '{'{to_fixed(1.80078125), to_fixed(2.0)},
-                        '{to_fixed(5.48046875), to_fixed(6.0)},
-                        '{to_fixed(-15.6796875), to_fixed(-18.859375)},
-                        '{to_fixed(7.359375), to_fixed(3.26171875)}};
+    matrix16_t matA;
 
-    matrix16_t matW = '{'{to_fixed(1.0), to_fixed(4.34765625)},
-                        '{to_fixed(5.75), to_fixed(1.0)}};
+    matrix16_t matW;
                         
 
     function automatic fixed16_t fixedMAC(input fixed16_t a, input fixed16_t b, input fixed16_t acc);
@@ -108,20 +104,6 @@ module test_systolic_tb;
     bit start = 0;
     bit assertionFail = 0;
 
-    initial begin // This generates what in the arch will be the memories
-        for (int i = 0; i < SYSTOLIC_ARRAY_WIDTH; i++) begin
-            extractColReverse(matW, w_col_r[i], i, N);
-            `ifdef DEBUG
-                $display("w_col[%.d]_r:", i);
-                printVec(w_col_r[i], N);
-            `endif
-            extractCol(matA, a_row[i], i, M);
-            `ifdef DEBUG
-                $display("a_row[%.d]:", i);
-                printVec(a_row[i], M);
-            `endif
-        end
-    end
 
     generate
         // Assign column inputs to DUT
@@ -158,42 +140,65 @@ module test_systolic_tb;
             end
         end
 
-        // TODO: Ceck if this always block may work.
-        // for (genvar col = 0; col < SYSTOLIC_ARRAY_WIDTH; col++) begin : psum_in_assign
-        //     always @(posedge clk or posedge rst) begin
-        //         if (rst) begin
-        //             for (int row = 0; row < SYSTOLIC_ARRAY_WIDTH; row++) begin
-        //                 systolic_output[row][col] = 16'b0;
-        //             end
-        //         end else if (sys_valid_out[col]) begin
-        //             if ( sys_valid_out[col] ) begin
-        //                 systolic_output[cycle_count - (SYSTOLIC_ARRAY_WIDTH -1)][col] = sys_data_out[(16*(col+1))-1 -:16];
-        //             end
-        //         end
-        //     end
-        // end
-
         for (genvar col = 0; col < SYSTOLIC_ARRAY_WIDTH; col++) begin : psum_in_assign
-            always @(sys_data_out[(16*(col+1))-1 -:16]) begin
-                systolic_output[cycle_count - SYSTOLIC_ARRAY_WIDTH - 1 - col][col] = sys_data_out[(16*(col+1))-1 -:16];
+            always @(posedge clk or posedge rst) begin
+                if (rst) begin
+                    for (int row = 0; row < SYSTOLIC_ARRAY_WIDTH; row++) begin
+                        systolic_output[row][col] = 16'b0;
+                    end
+                end else if (cycle_count >= 2*N + col && cycle_count < 2*N + col + M) begin
+                    systolic_output[cycle_count - (2*N + col)][col] = sys_data_out[(16*(col+1))-1 -:16];
+                end
             end
         end
     endgenerate
 
     assign sys_switch_in = cycle_count == SYSTOLIC_ARRAY_WIDTH -1;
-    assign sys_start = cycle_count >= SYSTOLIC_ARRAY_WIDTH -1 && cycle_count < SYSTOLIC_ARRAY_WIDTH -1 + M; //TODO: check if the upper limit is correct
+    assign sys_start = cycle_count >= SYSTOLIC_ARRAY_WIDTH -1 && cycle_count < SYSTOLIC_ARRAY_WIDTH -1 + M;
 
 
     // -------------------- Test Procedure --------------------
     bit b;
     initial begin
         vector16_t col_vec;
+        assert (N <= SYSTOLIC_ARRAY_WIDTH) else begin
+            $error("N must be less than or equal to SYSTOLIC_ARRAY_WIDTH");
+            $finish;
+        end
+        assert (K <= SYSTOLIC_ARRAY_WIDTH) else begin
+            $error("K must be less than or equal to SYSTOLIC_ARRAY_WIDTH");
+            $finish;
+        end
+        
+        populateMatRandom(matA, M, N, -10.0, 10.0);
+        `ifdef DEBUG_MATRIX
+            $display("Matrix A:");
+            printMat(matA, M, N);
+        `endif
+        populateMatRandom(matW, N, K, -10.0, 10.0);
+        `ifdef DEBUG_MATRIX
+            $display("Matrix W:");
+            printMat(matW, N, K);
+        `endif
+        for (int i = 0; i < SYSTOLIC_ARRAY_WIDTH; i++) begin
+            extractColReverse(matW, w_col_r[i], i, N);
+            `ifdef DEBUG
+                $display("w_col[%.d]_r:", i);
+                printVec(w_col_r[i], N);
+            `endif
+            extractCol(matA, a_row[i], i, M);
+            `ifdef DEBUG
+                $display("a_row[%.d]:", i);
+                printVec(a_row[i], M);
+            `endif
+        end
+
         cycle_count = -1;
         allocMat(systolic_output, M, K);
         // //Disabled test for matMult cause we don't have an identity matrix starting by now
-        matMult(matA, matW, result, 4, 2, 2);
+        matMult(matA, matW, result, M, N, K);
         
-        extractCol(matA, col_vec, 1, 2);
+        extractCol(matA, col_vec, 1, M);
         b = 1;
         foreach (col_vec[i]) begin
             // $display("col_vec[%0d] = %0.1f", i, from_fixed(col_vec[i]));
@@ -207,12 +212,12 @@ module test_systolic_tb;
             $display("Test EXTRACT COL: OK");
         end
 
-        extractColReverse(matA, col_vec, 1, 2);
+        extractColReverse(matA, col_vec, 1, M);
         b = 1;
         foreach (col_vec[i]) begin
             // $display("col_vec[%0d] = %0.1f", i, from_fixed(col_vec[i]));
-            if (col_vec[i] !== matA[2 - 1 - i][1]) begin
-                $display("Test EXTRACT COL REVERSE: FAILED => col_vect[%0d] was %0.1f, expected %0.1f", i, from_fixed(col_vec[i]), from_fixed(matA[4 - 1 - i][1]));
+            if (col_vec[i] !== matA[M - 1 - i][1]) begin
+                $display("Test EXTRACT COL REVERSE: FAILED => col_vect[%0d] was %0.1f, expected %0.1f", i, from_fixed(col_vec[i]), from_fixed(matA[M - 1 - i][1]));
                 b = 0;
                 break;
             end
@@ -228,7 +233,7 @@ module test_systolic_tb;
         #1;
         rst = 0;
         // Enable all columns
-        ub_rd_col_size_in = 2;
+        ub_rd_col_size_in = K;
         ub_rd_col_size_valid_in = 1;
         // Start generating values
         start = 1;
@@ -236,7 +241,7 @@ module test_systolic_tb;
         #1;
 
         cycle_count = 0;
-        repeat (1 + 2*M + 1) begin
+        while (cycle_count < M + 2*N + K - 2) begin
             @(posedge clk);
             #1;
             cycle_count <= cycle_count + 1;
@@ -244,7 +249,7 @@ module test_systolic_tb;
 
         repeat (2) @(posedge clk);
 
-        b = checkMatEqual(systolic_output, result, M, K);
+        b = checkMatEqual(systolic_output, result, M, K, 1);
         assert (b == 1)
             else begin
                 $error("Assertion FAILED: systolic_output differ from expected result");

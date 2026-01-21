@@ -47,6 +47,23 @@ package test_utils_pkg;
     endfunction
 
     // --------------- Matrix Mult ----------------
+    function automatic fixed16_t fixedMAC(fixed16_t a, fixed16_t b, fixed16_t acc);
+        logic signed [31:0] prod;
+        logic signed [31:0] full_res;
+        
+        // 1. Moltiplicazione e Arrotondamento (+0.5 LSB)
+        prod = (a * b) + 32'sd128; 
+        
+        // 2. Accumulo con precisione estesa per evitare overflow intermedi
+        full_res = (signed'(acc) << 8) + (prod >>> 0); // Lavoriamo in formato Q16.16 temporaneo
+        full_res = full_res >>> 8; // Riportiamo a Q24.8
+
+        // 3. Logica di Saturazione (Clipping)
+        if (full_res > 32'sd32767)       return 16'h7FFF; // Saturate a +127.996
+        else if (full_res < -32'sd32768) return 16'h8000; // Saturate a -128.0
+        else                             return fixed16_t'(full_res);
+    endfunction
+
     function automatic void matMult(ref matrix16_t A, ref matrix16_t B, ref matrix16_t C, input int M, input int N, input int K);
         if (C == null) begin
             allocMat(C, M, K);
@@ -56,25 +73,10 @@ package test_utils_pkg;
                 bit signed [15:0] acc_result = 16'b0;
                 bit signed [15:0] mult_16 = 16'b0;
                 C[i][j] = 16'b0;
-                // $display("Calculating C[%0d][%0d]\n\t", i, j);
                 for (int k = 0; k < N; k++) begin
-                    // Fixed-point multiplication and accumulation
-                    bit signed [31:0] mult_result;
-                    bit signed [31:0] mult_result_rounded;
-                    mult_result = $signed(A[i][k]) * $signed(B[k][j]);
-                    mult_result_rounded = mult_result + 32'h00000080;
-                    // mult_result = (A[i][k]) * (B[k][j]);
-                    // Adjust for fixed-point (frac=8)
-                    // mult_16 = mult_result >>> 8;
-                    
-                    mult_16 = mult_result_rounded[23:8];
-                    acc_result = acc_result + mult_16;
-                    // $write("(%0.1f, %0.1f)", from_fixed(mult_result[15:0]), from_fixed(acc_result));
-
+                    acc_result = fixedMAC(A[i][k], B[k][j], acc_result);
                 end
                 C[i][j] = acc_result;
-                // $display("\nC[%0d][%0d] (acc) = %0.2f", i, j, from_fixed(acc_result));
-                // $display("C[%0d][%0d]       = %0.2f", i, j, from_fixed(C[i][j]));
             end
         end
     endfunction
@@ -93,10 +95,27 @@ package test_utils_pkg;
         mat.delete();
     endfunction
 
-    function automatic bit checkMatEqual(ref matrix16_t A, ref matrix16_t B, input int rows, input int cols);
+    function automatic void populateMatRandom(ref matrix16_t mat, input int rows, input int cols, input real min_val, input real max_val);
+        // Check if mat is allocated
+        if (mat == null) begin
+            allocMat(mat, rows, cols);
+        end
+        for (int i = 0; i < rows; i++) begin
+            for (int j = 0; j < cols; j++) begin
+                real rand_real;
+                rand_real = $urandom_range(0, 1000) / 1000.0 * (max_val - min_val) + min_val;
+                mat[i][j] = to_fixed(rand_real);
+            end
+        end
+    endfunction
+
+    function automatic bit checkMatEqual(ref matrix16_t A, ref matrix16_t B, input int rows, input int cols, input bit assertOnFail=0);
         for (int i = 0; i < rows; i++) begin
             for (int j = 0; j < cols; j++) begin
                 if (A[i][j] !== B[i][j]) begin
+                    if (assertOnFail) begin
+                        $error("Matrix mismatch at element [%0d][%0d]: A=%0.7f, B=%0.7f", i, j, from_fixed(A[i][j]), from_fixed(B[i][j]));
+                    end
                     return 0;
                 end
             end
