@@ -193,7 +193,6 @@ module test_systolic_tb;
             `endif
         end
 
-        cycle_count = -1;
         allocMat(systolic_output, M, K);
         // //Disabled test for matMult cause we don't have an identity matrix starting by now
         matMult(matA, matW, result, M, N, K);
@@ -226,8 +225,9 @@ module test_systolic_tb;
             $display("Test EXTRACT COL REVERSE: OK");
         end
 
-        // Initialize
+        /////////////////////// START TEST ///////////////////////
         rst = 1;
+        cycle_count = -1;
 
         @(posedge clk);
         #1;

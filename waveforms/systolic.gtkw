@@ -1,16 +1,24 @@
 [*]
 [*] GTKWave Analyzer v3.3.118 (w)1999-2023 BSI
-[*] Thu Dec  4 11:55:34 2025
+[*] Thu Jan 22 18:50:30 2026
 [*]
 [dumpfile] "/home/alan.masutti/ACA_project/tiny-tpu/waveforms/systolic.vcd"
-[dumpfile_mtime] "Thu Dec  4 10:03:31 2025"
-[dumpfile_size] 18926
+[dumpfile_mtime] "Thu Jan 22 18:48:36 2026"
+[dumpfile_size] 138968
 [savefile] "/home/alan.masutti/ACA_project/tiny-tpu/waveforms/systolic.gtkw"
 [timestart] 0
 [size] 1918 944
 [pos] -1 -1
-*-14.160103 58760 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-14.782482 113200 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] systolic.
+[treeopen] systolic.pe_rows[0].
+[treeopen] systolic.pe_rows[0].pe_cols[0].
+[treeopen] systolic.pe_rows[0].pe_cols[0].genblk1.
+[treeopen] systolic.pe_rows[0].pe_cols[0].genblk1.genblk1.
+[treeopen] systolic.pe_rows[3].
+[treeopen] systolic.pe_rows[3].pe_cols[0].
+[treeopen] systolic.pe_rows[3].pe_cols[0].genblk1.
+[treeopen] systolic.pe_rows[3].pe_cols[0].genblk1.genblk1.
 [sst_width] 276
 [signals_width] 303
 [sst_expanded] 1
@@ -19,52 +27,32 @@
 systolic.clk
 [color] 1
 systolic.rst
-@40000420
-[fpshift_count] 8
-systolic.sys_weight_in_11[15:0]
-[fpshift_count] 8
-systolic.sys_accept_w_1
-[fpshift_count] 8
-systolic.sys_weight_in_12[15:0]
-[fpshift_count] 8
-systolic.sys_accept_w_2
-@200
--
-@40000420
-[fpshift_count] 8
-systolic.sys_data_in_11[15:0]
-[fpshift_count] 8
-systolic.sys_data_in_21[15:0]
-@200
--
+systolic.ub_rd_col_size_in[2:0]
+systolic.ub_rd_col_size_valid_in
 @40000420
 [fpshift_count] 8
 systolic.sys_switch_in
-@200
--
-@40000420
-[fpshift_count] 8
-systolic.sys_data_out_21[15:0]
-[fpshift_count] 8
-systolic.sys_data_out_22[15:0]
-[fpshift_count] 8
-systolic.sys_valid_out_21
-[fpshift_count] 8
-systolic.sys_valid_out_22
-@28
-systolic.ub_rd_col_size_valid_in
 @800200
 -PE_11
-@29
-systolic.pe11.pe_enabled
 @28
-systolic.pe11.pe_accept_w_in
-@40000420
-[fpshift_count] 8
-systolic.pe11.weight_reg_active[15:0]
-[fpshift_count] 8
-systolic.pe11.weight_reg_inactive[15:0]
+systolic.pe_rows[0].pe_cols[0].genblk1.genblk1.pe_inst.pe_enabled
+systolic.pe_rows[0].pe_cols[0].genblk1.genblk1.pe_inst.pe_accept_w_in
+@22
+systolic.pe_rows[0].pe_cols[0].genblk1.genblk1.pe_inst.pe_weight_in[15:0]
+@28
+systolic.pe_rows[0].pe_cols[0].genblk1.genblk1.pe_inst.pe_valid_in
+@22
+systolic.pe_rows[0].pe_cols[0].genblk1.genblk1.pe_inst.pe_input_in[15:0]
+systolic.pe_rows[0].pe_cols[0].genblk1.genblk1.pe_inst.pe_weight_out[15:0]
 @1000200
 -PE_11
+@28
+systolic.pe_rows[3].pe_cols[0].genblk1.genblk1.pe_inst.pe_accept_w_in
+@22
+systolic.pe_rows[3].pe_cols[0].genblk1.genblk1.pe_inst.pe_input_in[15:0]
+systolic.pe_rows[3].pe_cols[0].genblk1.genblk1.pe_inst.pe_weight_in[15:0]
+@40000421
+[fpshift_count] 8
+systolic.pe_rows[3].pe_cols[0].genblk1.genblk1.pe_inst.pe_psum_out[15:0]
 [pattern_trace] 1
 [pattern_trace] 0

@@ -28,11 +28,12 @@ test: venv $(SIM_BUILD_DIR)
 	pytest test/runner.py
 	@make --no-print-directory clean_sim
 
+dump_%: | $(SIM_BUILD_DIR)
+	@echo "module dump(); initial begin \$$dumpfile(\"$(shell pwd)/waveforms/$*.vcd\"); \$$dumpvars(0, $*); end endmodule" > $(SIM_BUILD_DIR)/dump_$*.sv
+
 # Individual module test targets
-test_%: venv $(SIM_BUILD_DIR)
+test_%: venv dump_% | $(SIM_BUILD_DIR) 
 	@echo "Running Cocotb test for: $*"
-	# Generate a temporary Verilog module to handle waveform dumping
-	@echo "module dump(); initial begin \$$dumpfile(\"waveforms/$*.vcd\"); \$$dumpvars(0, $*); end endmodule" > $(SIM_BUILD_DIR)/dump_$*.sv
 	# Locate the Cocotb simulation Makefile
 	@$(eval COCOTB_MAKEFILE=$(shell $(VENV)/bin/cocotb-config --makefiles)/Makefile.sim)
 	$(MAKE) -f $(COCOTB_MAKEFILE) \
@@ -49,6 +50,10 @@ test_%: venv $(SIM_BUILD_DIR)
 	# Clean up simulation artifacts after completion
 	@$(MAKE) -s --no-print-directory clean_sim
 
+test_systolic: venv dump_systolic | $(SIM_BUILD_DIR) 
+	@echo "Running Cocotb test for: systolic"
+	$(PYTHON) test/test_systolic.py
+	@$(MAKE) -s --no-print-directory clean_sim
 
 # ============ DO NOT MODIFY BELOW THIS LINE ==============
 
