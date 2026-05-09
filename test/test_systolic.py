@@ -94,21 +94,21 @@ async def systolic_matrix_mul_test(dut):
     
     # cocotb.log.info("SYSTOLIC_ARRAY_WIDTH: %d", dut.SYSTOLIC_ARRAY_WIDTH.value)
     
-    # # Generazione matrici random (Golden Model)
-    # matA = np.random.uniform(-10, 10, (M, N))
-    # matW = np.random.uniform(-10, 10, (N, K))
+    # Generazione matrici random (Golden Model)
+    matA = np.random.uniform(-5, 5, (M, N))
+    matW = np.random.uniform(-10, 10, (N, K))
     
     # # Generazione matrici fisse per test deterministico
-    matA = np.zeros((M, N))
-    matW = np.zeros((N, K))
+    # matA = np.zeros((M, N))
+    # matW = np.zeros((N, K))
     
-    for row in range(M):
-        for col in range(N):
-            matA[row, col] = -(row * M + col)  # Valori fissi per A
+    # for row in range(M):
+    #     for col in range(N):
+    #         matA[row, col] = -(row * M + col)  # Valori fissi per A
     
-    for row in range(N):
-        for col in range(K):
-            matW[row, col] = (row * M + col) + 5 # Valori fissi per W
+    # for row in range(N):
+    #     for col in range(K):
+    #         matW[row, col] = (row * M + col) + 5 # Valori fissi per W
     
     
     # Calcola la matrice risultato non quantizzata per confronto
@@ -266,12 +266,13 @@ def test_module():
     PROJ_ROOT = Path(__file__).resolve().parent.parent
     SRC_DIR = PROJ_ROOT / "src/systemverilog"
     sources = list(SRC_DIR.rglob("*.sv"))
-    # sources.append(PROJ_ROOT / "sim_build" / f"dump_{unit_name}.sv")
+    sources.append(PROJ_ROOT / "sim_build" / f"dump_systolic.sv")
 
     runner.build(
         sources=sources,
         hdl_toplevel=cfg["hdl_toplevel"],
         always=True,
+        build_args=["-g2012", "-s", "dump"],
         parameters=cfg.get("parameters", {}),
     )
 

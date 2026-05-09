@@ -20,7 +20,7 @@ MODULES_FOUND = $(patsubst test/test_%.py,%,$(wildcard test/test_*.py))
 venv:
 	@if [ ! -d $(VENV) ]; then \
 		python3 -m venv $(VENV); \
-		$(PYTHON) -m pip install cocotb==1.9.2 cocotb-bus==0.3.0 numpy; \
+		$(PYTHON) -m pip install cocotb==1.9.2 cocotb-bus==0.3.0 numpy pytest==8.4.2; \
 	fi
 
 # Regression test target (runs the pytest runner)
