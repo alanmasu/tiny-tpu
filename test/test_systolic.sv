@@ -171,11 +171,21 @@ module test_systolic_tb;
         end
         
         populateMatRandom(matA, M, N, -10.0, 10.0);
+        // for(int r = 0; r < M; r++) begin
+        //     for (int c = 0; c < N; c++) begin
+        //         matA[r][c] = to_fixed(-(r * N + c) * 1.0);
+        //     end
+        // end
         `ifdef DEBUG_MATRIX
             $display("Matrix A:");
             printMat(matA, M, N);
         `endif
         populateMatRandom(matW, N, K, -10.0, 10.0);
+        // for(int r = 0; r < N; r++) begin
+        //     for (int c = 0; c < K; c++) begin
+        //         matW[r][c] = to_fixed(r * N + c + 5.0);
+        //     end
+        // end
         `ifdef DEBUG_MATRIX
             $display("Matrix W:");
             printMat(matW, N, K);
