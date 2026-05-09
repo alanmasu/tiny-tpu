@@ -2,6 +2,7 @@ import cocotb
 from cocotb.triggers import Timer, RisingEdge, FallingEdge, ReadOnly
 from cocotb.utils import get_sim_time
 from cocotb.clock import Clock
+from cocotb.triggers import Edge
 import numpy as np
 
 # --- Utility per Virgola Fissa (Q8.8) ---
@@ -24,7 +25,7 @@ def calculate_expected(A_raw, W_raw, M, N, K):
     """Calcola il risultato atteso con la stessa precisione del pacchetto SV."""
     A = np.array(A_raw, dtype=np.int16)
     W = np.array(W_raw, dtype=np.int16)
-    C = np.zeros((M, K), dtype=np.int16)
+    C = np.zeros((M, K), dtype=np.int32)
 
     for i in range(M):
         for j in range(K):
@@ -65,19 +66,42 @@ async def setup_dut(dut, K):
     await Timer(1, units="ns")
     dut.rst.value = 0
 
+async def monitor_fixed_signal(sig):
+    while True:
+        await Edge(sig)
+        cocotb.log.info(
+            f"{sig._path} -> {from_fixed(int(sig.value))}"
+        )    
+
 @cocotb.test()
 async def systolic_matrix_mul_test(dut):
+    # assert False
     # Parametri
-    WIDTH = 2
+    WIDTH = dut.SYSTOLIC_ARRAY_WIDTH.value
     M, N, K = 2, 2, WIDTH
     
-    assert N <= K, "N should be less than or equal to K for this test."
     assert K <= WIDTH, "K should be less than or equal to SYSTOLIC_ARRAY_WIDTH."
+    assert N <= K, "N should be less than or equal to K for this test."
+    
+    # cocotb.log.info("SYSTOLIC_ARRAY_WIDTH: %d", dut.SYSTOLIC_ARRAY_WIDTH.value)
+    
+    # # Generazione matrici random (Golden Model)
+    # matA = np.random.uniform(-10, 10, (M, N))
+    # matW = np.random.uniform(-10, 10, (N, K))
+    
+    # # Generazione matrici fisse per test deterministico
+    matA = np.zeros((M, N))
+    matW = np.zeros((N, K))
+    
+    for row in range(M):
+        for col in range(N):
+            matA[row, col] = -(row * M + col)  # Valori fissi per A
+    
+    for row in range(N):
+        for col in range(K):
+            matW[row, col] = (row * M + col) + 5 # Valori fissi per W
     
     
-    # Generazione matrici random (Golden Model)
-    matA = np.random.uniform(-10, 10, (M, N))
-    matW = np.random.uniform(-10, 10, (N, K))
     # Calcola la matrice risultato non quantizzata per confronto
     matC = np.dot(matA, matW)
     
@@ -86,6 +110,17 @@ async def systolic_matrix_mul_test(dut):
     matA_fixed = np.vectorize(to_fixed)(matA)
     matW_fixed = np.vectorize(to_fixed)(matW)
     
+    # Estraggo le colonne di W in ordine inverso per il caricamento
+    w_col_r = np.zeros((N, K), dtype=np.int16)
+    for col in range(K):
+        for row in range(N):
+            w_col_r[row, col] = matW_fixed[(N - 1) - row, col]
+        
+    # print(w_col_r)
+    # for row in range(N):
+    #     for col in range(K):
+    #         print(f"{from_fixed(w_col_r[row, col])} ", end="")
+    #     print("")
     # Allocazione matrice risultato atteso
     expected_res = np.zeros((M, K), dtype=np.int16)
     expected_res = calculate_expected(matA_fixed, matW_fixed, M, N, K)
@@ -112,25 +147,38 @@ async def systolic_matrix_mul_test(dut):
         total_cycles = M + 2*N + K + 10
         await RisingEdge(dut.rst)  
         await FallingEdge(dut.rst)
+        await RisingEdge(dut.clk)
+        
         cocotb.log.info(f"Inizio Drive Input @ {get_sim_time(units='ns')} ns")
         for cycle in range(total_cycles):
+            
             # Logica Weights (Top side)
             weight_bus = 0
             accept_w = 0
+            weightStr = ""
             for col in range(K):
                 if col <= cycle < col + N:
-                    val = matW_fixed[cycle - col, col] & 0xFFFF
+                    val = int(w_col_r[cycle - col, col]) & 0xFFFF
+                    weightStr += f"{from_fixed(val)} "
+                    # val = w_col_r[cycle - col, col] & 0xFFFF
                     weight_bus |= (val << (16 * col))
                     accept_w |= (1 << col)
             
             # Logica Data (Left side)
             data_bus = 0
+            dataStr = ""
             for row in range(WIDTH):
                 # Traduzione della condizione SV: cycle_count >= (WIDTH-1) + row
                 start_cycle = (WIDTH - 1) + row
                 if start_cycle <= cycle < start_cycle + M:
-                    val = matA_fixed[cycle - start_cycle, row] & 0xFFFF
+                    val = int(matA_fixed[cycle - start_cycle, row]) & 0xFFFF
+                    dataStr += f"{from_fixed(val)} "
                     data_bus |= (val << (16 * row))
+
+            # # Debug: 
+            # cocotb.log.info(f"Cycle {cycle}:")
+            # cocotb.log.info(f"\tWeighs: {weightStr}")
+            # cocotb.log.info(f"\tData: {dataStr}")
             
             # Switch e Start
             dut.sys_switch_in.value = 1 if cycle == (WIDTH - 1) else 0
@@ -144,10 +192,11 @@ async def systolic_matrix_mul_test(dut):
             await RisingEdge(dut.clk)
 
     # Task per monitorare le uscite
-    systolic_output = np.zeros((M, K))
+    systolic_output = np.zeros((M, K), dtype=np.int32)
     async def monitor_outputs():
         await RisingEdge(dut.rst)  
         await FallingEdge(dut.rst)
+        await RisingEdge(dut.clk)
         cocotb.log.info(f"Inizio Monitoraggio Uscite @ {get_sim_time(units='ns')} ns")
         for cycle in range(M + 2*N + K + 10):
             await ReadOnly() # Leggi dopo che i segnali si sono stabilizzati
@@ -156,18 +205,30 @@ async def systolic_matrix_mul_test(dut):
                 if 2*N + col <= cycle < 2*N + col + M:
                     row = cycle - (2*N + col)
                     # Estrai i 16 bit corrispondenti alla colonna
-                    val = (dut.sys_data_out.value >> (16 * col)) & 0xFFFF
+                    raw = ((int(dut.sys_data_out.value)) >> (16 * col)) & 0xFFFF
+                    val = raw - 0x10000 if raw & 0x8000 else raw
                     systolic_output[row, col] = val
             await RisingEdge(dut.clk)
-
+            
+    # pe10 = (
+    #     dut
+    #     .pe_rows[1]
+    #     .pe_cols[0]
+    #     .genblk1
+    #     .genblk1
+    #     .pe_inst
+    # ) 
+    
     # Eseguiamo drive e monitor in parallelo
     drive_task = cocotb.start_soon(drive_inputs())
-    monitor_task = cocotb.start_soon(monitor_outputs())
-    
+    monitor_task = cocotb.start_soon(monitor_outputs()) 
+    # # Print PE(0,0) weight e data when they change 
+    # monitor_pe10_task = cocotb.start_soon(monitor_fixed_signal(pe10.pe_psum_out))
+    # monitor_pe11_task = cocotb.start_soon(monitor_fixed_signal(pe11.pe_psum_out))
     
     await setup_dut(dut, K)
-    await drive_task
     await monitor_task
+    # await drive_task
 
     # Verifica Risultati
     cocotb.log.info("Verifica Matrice...")
