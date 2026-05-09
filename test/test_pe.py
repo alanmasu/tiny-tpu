@@ -2,6 +2,11 @@ import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import RisingEdge, ClockCycles, Timer
 
+CONFIG = {
+    "hdl_toplevel": "pe",
+    "parameters": {}
+}
+
 def to_fixed(val, frac_bits=8):
     return int(round(val * (1 << frac_bits))) & 0xFFFF
 
@@ -14,6 +19,7 @@ def from_fixed(val, frac_bits=8):
 
 @cocotb.test()
 async def test_pe(dut):
+    # assert False
     """Test the PE module with a variety of fixed-point inputs."""
 
     assert from_fixed(to_fixed(5.75)) == 5.75, "to_fixed or from_fixed is broken"

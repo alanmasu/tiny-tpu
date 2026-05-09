@@ -1,5 +1,6 @@
 import os
 import pytest
+import importlib
 from pathlib import Path
 from cocotb.runner import get_runner
 
@@ -7,23 +8,36 @@ from cocotb.runner import get_runner
 PROJ_ROOT = Path(__file__).resolve().parent.parent
 SRC_DIR = PROJ_ROOT / "src/systemverilog"
 
-# Lista dei moduli da testare
-@pytest.mark.parametrize("unit", ["pe", "systolic"])
-def test_regression(unit):
+UNITS = [
+    "pe",
+    "systolic"
+]
+
+@pytest.mark.parametrize("unit_name", UNITS)
+def test_module(unit_name):
+    print(f"Running tests for unit: {unit_name}")
+    module_name = f"test_{unit_name}"
+    mod = importlib.import_module(module_name)
+    cfg = getattr(mod, "CONFIG", {})
+
     sim = os.getenv("SIM", "icarus")
     runner = get_runner(sim)
 
-    sources = list((PROJ_ROOT / "src/systemverilog").rglob("*.sv"))
-    # 1. Compilazione: punta a src/ per i sorgenti SV
+    sources = list(SRC_DIR.rglob("*.sv"))
+    # sources.append(PROJ_ROOT / "sim_build" / f"dump_{unit_name}.sv")
+
     runner.build(
-        verilog_sources=sources,
-        hdl_toplevel=unit,
-        build_dir=PROJ_ROOT / "sim_build", # Cartella di build dedicata
-        always=True
+        sources=sources,
+        hdl_toplevel=cfg["hdl_toplevel"],
+        always=True,
+        parameters=cfg.get("parameters", {}),
     )
 
-    # 2. Esecuzione: punta alla cartella test/ per i moduli Python
     runner.test(
-        hdl_toplevel=unit,
-        test_module=f"test_{unit}", # Cerca test_alu.py o test_fifo.py
+        hdl_toplevel=cfg["hdl_toplevel"],
+        test_module=module_name,
     )
+
+if __name__ == "__main__":
+    for unit in UNITS:
+        test_module(unit)
